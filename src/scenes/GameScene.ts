@@ -3,6 +3,8 @@ import {SceneRegistry} from "./SceneRegistry";
 import {SHARED_CONFIG} from "../model/config";
 import Wormhole from "../model/Wormhole";
 import Unit from "../model/Unit";
+import {invoke} from "@tauri-apps/api";
+
 
 export default class GameScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
@@ -20,19 +22,21 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
+        // this.input.mouse.disableContextMenu();
         const rect1 = this.add.rectangle(10, 10, 300, 300, 0xA1A1A1).setOrigin(0, 0);
         const rect2 = this.add.rectangle(500, 10, 300, 300, 0xA1A1A1).setOrigin(0, 0);
         this.wh1 = new Wormhole(this, 260, 120);
         this.wh2 = new Wormhole(this, 560, 120);
         this.unit1 = new Unit(this, 50, 50);
         this.graphics = this.add.graphics();
+        invoke("greet", {name: "yeet"}).then(console.log)
     }
 
 
     update(time: number, delta: number) {
         if (this.unit1.travelling) {
             this.graphics.clear();
-            this.graphics.lineStyle(5, 0x00FF00);
+            this.graphics.lineStyle(1, 0x00FF00);
             this.graphics.lineBetween(this.wh1.x, this.wh1.y, this.wh2.x, this.wh2.y);
             return;
         }
@@ -53,7 +57,7 @@ export default class GameScene extends Phaser.Scene {
             }
         } else {
             this.graphics.clear();
-            const target = {x: 600, y: 250};
+            const target = {x: 600, y: 50};
             if (this.unit1.pos.distance(target) <= 5) {
                 this.unit1.body.stop();
             } else {
