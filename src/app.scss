@@ -1,0 +1,31 @@
+@mixin h-100 {
+  height: 100%;
+}
+
+.scale-2 {
+  transform: scale(2);
+}
+
+.grid {
+  display: grid;
+}
+
+.grid-content-center {
+  place-content: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.h-100 {
+  @include h-100;
+}
+
+#app {
+  @include h-100;
+}

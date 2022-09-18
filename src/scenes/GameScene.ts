@@ -4,6 +4,7 @@ import {SHARED_CONFIG} from "../model/config";
 import Wormhole from "../model/Wormhole";
 import Unit from "../model/Unit";
 import {invoke} from "@tauri-apps/api";
+import {route} from "preact-router";
 
 
 export default class GameScene extends Phaser.Scene {
@@ -29,6 +30,9 @@ export default class GameScene extends Phaser.Scene {
         this.wh2 = new Wormhole(this, 560, 120);
         this.unit1 = new Unit(this, 50, 50);
         this.graphics = this.add.graphics();
+        this.input.keyboard.on("keyup-ESC", (ev) => {
+            route("/", true);
+        })
         invoke("greet", {name: "yeet"}).then(console.log)
     }
 

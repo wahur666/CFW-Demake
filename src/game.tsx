@@ -1,7 +1,7 @@
 import GameScene from "./scenes/GameScene";
 import Phaser from "phaser";
 import PreloadScene from "./scenes/PreloadScene";
-import "./style.css";
+import "./style.scss";
 import {SHARED_CONFIG} from "./model/config";
 import {Component, ComponentChild, createRef, RenderableProps} from "preact";
 import ScaleModes = Phaser.Scale.ScaleModes;
@@ -25,6 +25,7 @@ export default class Game extends Component<IProps, IState> {
         scale: {
             mode: ScaleModes.RESIZE
         },
+        backgroundColor: "#021114",
         render: {
             pixelArt: true,
         },
