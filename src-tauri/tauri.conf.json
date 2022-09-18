@@ -47,6 +47,15 @@
         "timestampUrl": ""
       }
     },
+    "cli": {
+      "args": [
+        {
+          "name": "host",
+          "index": 1,
+          "short": "h"
+        }
+      ]
+    },
     "security": {
       "csp": null
     },
