@@ -1,22 +1,27 @@
 use tokio::io::{AsyncBufReadExt, AsyncReadExt, AsyncWriteExt, BufReader};
 use tokio::net::TcpListener;
 use tokio::runtime::Runtime;
+use tokio::sync::broadcast;
 
 pub fn add(left: usize, right: usize) -> usize {
     left + right
 }
 
-pub fn startServer() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+pub fn start_server() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     // Create the runtime
     let rt  = Runtime::new()?;
 
     // Spawn the root task
     rt.block_on(async {
         let listener = TcpListener::bind("0.0.0.0:8080").await?;
+        let (tx, _rx) = broadcast::channel(10);
         println!("TCP server listening on 127.0.0.1:8080");
         loop {
             println!("wating for connection");
             let (mut socket, addr) = listener.accept().await?;
+            let tx = tx.clone();
+            let mut rx = tx.subscribe();
+
             println!("connected {}", addr);
             tokio::spawn(async move {
                 println!("TOKIOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
@@ -26,13 +31,21 @@ pub fn startServer() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
                 // In a loop, read data from the socket and write the data back.
                 loop {
-                    let bytes_read = reader.read_line(&mut line).await.unwrap();
-                    if bytes_read == 0 {
-                        break;
+                    tokio::select! {
+                        result = reader.read_line(&mut line) => {
+                            if result.unwrap() == 0 {
+                                break;
+                            }
+                            tx.send((line.clone(), addr)).unwrap();
+                            line.clear();
+                        },
+                        result = rx.recv() => {
+                            let (msg, other_addr) = result.unwrap();
+                            if addr != other_addr {
+                                writer.write_all(msg.as_bytes()).await.unwrap();
+                            }
+                        }
                     }
-
-                    writer.write_all(line.as_bytes()).await.unwrap();
-                    line.clear();
                 }
             });
         }
