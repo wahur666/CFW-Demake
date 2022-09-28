@@ -11,3 +11,5 @@ export function vector2ToArray(p: Vector2): [number, number] {
 export const defaultFont = '"Titillium Web", sans-serif';
 
 export const formatTime = (s: number) => (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
+
+export const d2r = Phaser.Math.DegToRad;

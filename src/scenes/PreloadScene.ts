@@ -2,12 +2,18 @@ import * as Phaser from "phaser";
 import {SceneRegistry} from "./SceneRegistry";
 import wormhole from "../assets/ufoBlue.png";
 import ship from "../assets/playerShip1_blue.png";
+import structure_house from "../assets/structure_house.png";
+import structure_farm from "../assets/structure_farm.png";
+import planet00 from "../assets/planet00_d.png";
 import {defaultFont} from "../helpers/utils";
 import {SHARED_CONFIG} from "../model/config";
 
 export enum Images {
+    HOUSE_ICON = "house-icon",
+    FARM_ICON = "farm-icon",
     WORMHOLE = "wormhole",
-    SHIP = "ship"
+    SHIP = "ship",
+    PLANET = "planet",
 }
 
 
@@ -38,6 +44,9 @@ export default class PreloadScene extends Phaser.Scene {
     preload() {
         this.load.image(Images.SHIP, ship);
         this.load.image(Images.WORMHOLE, wormhole);
+        this.load.image(Images.HOUSE_ICON, structure_house);
+        this.load.image(Images.FARM_ICON, structure_farm);
+        this.load.image(Images.PLANET, planet00);
         this.createLoadingGui();
         this.load.once("complete", () => {
             this.startGame();
