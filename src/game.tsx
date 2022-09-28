@@ -50,7 +50,12 @@ export default class Game extends Component<IProps, IState> {
     }
 
     render(props: RenderableProps<IProps> | undefined, state: Readonly<IState> | undefined, context: any): ComponentChild {
-        return <canvas id={"cv1"} ref={this.canvas}/>;
+        return <>
+            <div class="absolute-zero disable-pointer-event">
+                <button class="enable-pointer-event" onClick={(ev) => console.log("yeeeeeeet")}>rekt</button>
+            </div>
+            <canvas id={"cv1"} ref={this.canvas}/>
+        </>;
     }
 
 }

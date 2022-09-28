@@ -33,6 +33,9 @@ export default class GameScene extends Phaser.Scene {
         this.input.keyboard.on("keyup-ESC", (ev) => {
             route("/", true);
         })
+        this.input.on("pointerdown", (ev) => {
+            console.log("mouseee", ev);
+        })
         invoke("greet", {name: "yeet"}).then(console.log)
     }
 
