@@ -1,4 +1,4 @@
-import {h, render} from "preact";
+import {render} from "preact";
 import Game from "./game";
 import "./style.scss";
 import Router from "preact-router";
