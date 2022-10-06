@@ -1,14 +1,12 @@
 import Phaser from "phaser";
-import {SceneRegistry} from "./SceneRegistry";
-import {SHARED_CONFIG} from "../model/config";
+import { SceneRegistry } from "./SceneRegistry";
+import { SHARED_CONFIG } from "../model/config";
 import Wormhole from "../model/Wormhole";
 import Unit from "../model/Unit";
-import {invoke} from "@tauri-apps/api";
-import {route} from "preact-router";
+import { route } from "preact-router";
 import Building from "../model/Building";
-import {Images} from "./PreloadScene";
+import { Images } from "./PreloadScene";
 import Planet from "../model/Planet";
-
 
 export default class GameScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
@@ -29,62 +27,63 @@ export default class GameScene extends Phaser.Scene {
 
     create() {
         // this.input.mouse.disableContextMenu();
-        const rect1 = this.add.rectangle(10, 10, 300, 300, 0xA1A1A1).setOrigin(0, 0);
-        const rect2 = this.add.rectangle(500, 10, 300, 300, 0xA1A1A1).setOrigin(0, 0);
+        const rect1 = this.add.rectangle(10, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
+        const rect2 = this.add.rectangle(500, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
         this.wh1 = new Wormhole(this, 260, 120);
         this.wh2 = new Wormhole(this, 560, 120);
         this.unit1 = new Unit(this, 50, 50);
         this.graphics = this.add.graphics();
         this.input.keyboard.on("keyup-ESC", (ev) => {
             route("/", true);
-        })
+        });
         this.input.on("pointerdown", (ev) => {
             console.log("mouseee", ev);
-        })
-        this.input.keyboard.on("keyup-Q", (ev) => {
-            if (this.building) {
-                this.building.wide = 1
-            }
         });
-
-        this.input.keyboard.on("keyup-W", (ev) => {
-            if (this.building) {
-                this.building.wide = 2
-            }
-        });
-
-        this.input.keyboard.on("keyup-E", (ev) => {
-            if (this.building) {
-                this.building.wide = 3
-            }
-        });
-
-        this.input.keyboard.on("keyup-Q", (ev) => {
-
-        });
-
-        this.input.on('pointermove', (ev) => {
-            if (this.building) {
-                const distance = Phaser.Math.Distance.Between(ev.x, ev.y, this.planet.x, this.planet.y);
-                if (Math.abs(distance - this.planet.radius) < 20) {
-                    this.building.unBound = false;
-                    this.building.calculatePlace(this.planet, ev.x, ev.y);
-                } else {
-                    this.building.unBound = true;
-                    this.building.setPosition(ev.x, ev.y);
-                }
-            }
-        });
-
-        this.planet = new Planet(this, 500, 500, Images.PLANET);
-        this.building = new Building(this, 500, 500, Images.HOUSE_ICON);
-        invoke("greet", {name: "yeet"}).then(console.log)
+        // this.input.keyboard.on("keyup-Q", (ev) => {
+        //     if (this.building) {
+        //         this.building.wide = 1;
+        //     }
+        // });
+        //
+        // this.input.keyboard.on("keyup-W", (ev) => {
+        //     if (this.building) {
+        //         this.building.wide = 2;
+        //     }
+        // });
+        //
+        // this.input.keyboard.on("keyup-E", (ev) => {
+        //     if (this.building) {
+        //         this.building.wide = 3;
+        //     }
+        // });
+        //
+        // this.input.keyboard.on("keyup-Q", (ev) => {});
+        //
+        // this.input.on("pointermove", (ev) => {
+        //     if (this.building) {
+        //         const distance = Phaser.Math.Distance.Between(
+        //             ev.x,
+        //             ev.y,
+        //             this.planet.x,
+        //             this.planet.y
+        //         );
+        //         if (Math.abs(distance - this.planet.radius) < 20) {
+        //             this.building.unBound = false;
+        //             this.building.calculatePlace(this.planet, ev.x, ev.y);
+        //         } else {
+        //             this.building.unBound = true;
+        //             this.building.setPosition(ev.x, ev.y);
+        //         }
+        //     }
+        // });
+        //
+        // this.planet = new Planet(this, 500, 500, Images.PLANET);
+        // this.building = new Building(this, 500, 500, Images.HOUSE_ICON);
     }
-
 
     update(time: number, delta: number) {
         this.building?.update(delta);
-        this.planet.update();
+        this.planet?.update();
         // if (this.unit1.travelling) {
         //     this.graphics.clear();
         //     this.graphics.lineStyle(1, 0x00FF00);
@@ -117,8 +116,4 @@ export default class GameScene extends Phaser.Scene {
         //     }
         // }
     }
-
-
 }
-
-
