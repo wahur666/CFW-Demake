@@ -1,12 +1,12 @@
 import Phaser from "phaser";
 import { SceneRegistry } from "./SceneRegistry";
 import { SHARED_CONFIG } from "../model/config";
-import Wormhole from "../model/Wormhole";
-import Unit from "../model/Unit";
+import Wormhole from "../entity/Wormhole";
+import Unit from "../entity/Unit";
 import { route } from "preact-router";
-import Building from "../model/Building";
+import Building from "../entity/Building";
 import { Images } from "./PreloadScene";
-import Planet from "../model/Planet";
+import Planet from "../entity/Planet";
 
 export default class GameScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
@@ -17,6 +17,7 @@ export default class GameScene extends Phaser.Scene {
     private graphics: Phaser.GameObjects.Graphics;
     private building: Building | null = null;
     private planet: Planet;
+    private controls: Phaser.Cameras.Controls.FixedKeyControl;
 
     constructor() {
         super(SceneRegistry.GAME);
@@ -39,51 +40,104 @@ export default class GameScene extends Phaser.Scene {
         this.input.on("pointerdown", (ev) => {
             console.log("mouseee", ev);
         });
-        // this.input.keyboard.on("keyup-Q", (ev) => {
-        //     if (this.building) {
-        //         this.building.wide = 1;
-        //     }
+
+        // const cursors = this.input.keyboard.createCursorKeys();
+
+        // const controlConfig = {
+        //     camera: this.cameras.main,
+        //     left: cursors.left,
+        //     right: cursors.right,
+        //     up: cursors.up,
+        //     down: cursors.down,
+        //     zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
+        //     zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+        //     acceleration: 0.06,
+        //     drag: 0.0005,
+        //     maxSpeed: 1.0
+        // };
+
+        // this.controls = new Phaser.Cameras.Controls.FixedKeyControl({
+        //     up: cursors.up,
+        //     down: cursors.down,
+        //     left: cursors.left,
+        //     right: cursors.right,
+        //     camera: this.cameras.main,
+        //     speed: 1,
+        //     zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
+        //     zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+        //     zoomSpeed: 0.01
         // });
         //
-        // this.input.keyboard.on("keyup-W", (ev) => {
-        //     if (this.building) {
-        //         this.building.wide = 2;
-        //     }
-        // });
+        // const cam = this.cameras.main;
         //
-        // this.input.keyboard.on("keyup-E", (ev) => {
-        //     if (this.building) {
-        //         this.building.wide = 3;
-        //     }
-        // });
         //
-        // this.input.keyboard.on("keyup-Q", (ev) => {});
+        // this.input.on("wheel",  (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
         //
-        // this.input.on("pointermove", (ev) => {
-        //     if (this.building) {
-        //         const distance = Phaser.Math.Distance.Between(
-        //             ev.x,
-        //             ev.y,
-        //             this.planet.x,
-        //             this.planet.y
-        //         );
-        //         if (Math.abs(distance - this.planet.radius) < 20) {
-        //             this.building.unBound = false;
-        //             this.building.calculatePlace(this.planet, ev.x, ev.y);
-        //         } else {
-        //             this.building.unBound = true;
-        //             this.building.setPosition(ev.x, ev.y);
+        //     if (deltaY > 0) {
+        //         var newZoom = cam.zoom -.1;
+        //         if (newZoom > 0.3) {
+        //             cam.zoom = newZoom;
         //         }
         //     }
-        // });
         //
-        // this.planet = new Planet(this, 500, 500, Images.PLANET);
-        // this.building = new Building(this, 500, 500, Images.HOUSE_ICON);
+        //     if (deltaY < 0) {
+        //         var newZoom = cam.zoom +.1;
+        //         if (newZoom < 1.3) {
+        //             cam.zoom = newZoom;
+        //             cam.pan(pointer.worldX, pointer.worldY, 10, "Power2");
+        //         }
+        //     }
+        //
+        //
+        // });
+
+        this.input.keyboard.on("keyup-Q", (ev) => {
+            if (this.building) {
+                this.building.wide = 1;
+            }
+        });
+
+        this.input.keyboard.on("keyup-W", (ev) => {
+            if (this.building) {
+                this.building.wide = 2;
+            }
+        });
+
+        this.input.keyboard.on("keyup-E", (ev) => {
+            if (this.building) {
+                this.building.wide = 3;
+            }
+        });
+
+        this.input.on("pointermove", (ev) => {
+            if (this.building) {
+                const distance = Phaser.Math.Distance.Between(
+                    ev.x,
+                    ev.y,
+                    this.planet.x,
+                    this.planet.y
+                );
+                if (Math.abs(distance - this.planet.radius) < 20) {
+                    this.building.unBound = false;
+                    this.building.nearPlanet = this.planet;
+                    const loc = this.building.calculatePlace(this.planet, ev.x, ev.y);
+                    console.log("loc", loc);
+                } else {
+                    this.building.unBound = true;
+                    this.building.nearPlanet = null;
+                    this.building.setPosition(ev.x, ev.y);
+                }
+            }
+        });
+
+        this.planet = new Planet(this, 500, 500, Images.PLANET);
+        this.building = new Building(this, 500, 500, Images.HOUSE_ICON);
     }
 
     update(time: number, delta: number) {
         this.building?.update(delta);
-        this.planet?.update();
+        this.planet?.update(delta);
+        // this.controls.update(delta);
         // if (this.unit1.travelling) {
         //     this.graphics.clear();
         //     this.graphics.lineStyle(1, 0x00FF00);

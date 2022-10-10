@@ -15,12 +15,23 @@ export default class Building extends Phaser.GameObjects.Sprite {
     place = 1;
     wide = 2;
     baseAngle = d2r(30)
+    nearPlanet: Planet | null;
+    hoverPos: number[] =[]
+    textureName: string;
 
-    constructor(scene: GameScene, x: number, y: number, texture: string) {
-        super(scene, x, y, texture);
+    constructor(scene: GameScene, x: number, y: number, textureName: string) {
+        super(scene, x, y, textureName);
+        this.textureName = textureName;
         this.graphics = this.scene.add.graphics();
         this.scene.add.existing(this);
         this.setScale(this.imageScale);
+        this.nearPlanet = null;
+        this.scene.input.on("pointerup", (ev) => {
+            if (this.nearPlanet) {
+                this.nearPlanet.buildBuilding(this, ...this.hoverPos)
+            }
+        })
+
     }
 
     update(delta: number) {
@@ -48,12 +59,10 @@ export default class Building extends Phaser.GameObjects.Sprite {
             const wideAngle = this.baseAngle;
             const startAngle = this.place * wideAngle + Math.PI / 12 - (this.wide % 2 === 0 ? wideAngle / 2 : 0);
             const halfRot = wideAngle * this.wide / 2 ;
-            this.graphics.beginPath()
-            this.graphics.arc(this.x - Math.cos(startAngle) * this.radius, this.y - Math.sin(startAngle) * this.radius, this.radius, startAngle - halfRot, startAngle + halfRot);
-            this.graphics.stroke()
-
+            this.graphics.beginPath();
+            this.graphics.arc(this.x - Math.cos(startAngle) * this.radius, this.y - Math.sin(startAngle) * this.radius, this.radius, startAngle - halfRot + d2r(1), startAngle + halfRot - d2r(1));
+            this.graphics.stroke();
         }
-
     }
 
     destroy(fromScene?: boolean) {
@@ -62,12 +71,33 @@ export default class Building extends Phaser.GameObjects.Sprite {
         super.destroy(fromScene);
     }
 
-    calculatePlace(planet: Planet, x: number, y: number) {
+    calculatePlace(planet: Planet, x: number, y: number): number[] {
         const angle = Math.atan2(y - planet.y, x - planet.x);
         const a = Phaser.Math.RadToDeg(angle);
         const b = a > 0 ? a : 360 + a;
         this.place = (b + (this.wide % 2 === 0 ? 15 : 0) ) / 30 | 0;
         const diff = this.wide % 2 === 0 ? 0 : this.baseAngle / 2;
         this.setPosition(planet.x + Math.cos(this.place * this.baseAngle + diff) * planet.radius, planet.y + Math.sin(this.place * this.baseAngle + diff) * planet.radius)
+        if (this.wide === 1) {
+            this.hoverPos = [this.place];
+        } else if (this.wide === 2) {
+            const prev = this.place - 1 < 0 ? 11 : this.place - 1;
+            const next = this.place > 11 ? 0 : this.place;
+            this.hoverPos = [prev, next];
+        } else if (this.wide === 3) {
+            const prev = this.place - 1 < 0 ? 11 : this.place - 1;
+            const next = this.place + 1 > 11 ? 0 : this.place + 1;
+            this.hoverPos = [prev, this.place, next];
+        } else {
+            this.hoverPos = [];
+        }
+        return this.hoverPos;
+    }
+
+    clone(): Building {
+        const building = new Building(this.scene as GameScene, this.x, this.y, this.textureName);
+        building.wide = this.wide;
+        building.place = this.place;
+        return building;
     }
 }

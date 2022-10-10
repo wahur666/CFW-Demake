@@ -1,9 +1,9 @@
-import MapArea from "./MapArea";
+import Sector from "./Sector";
 
 
 export default class Map {
 
-    areas: MapArea[] = [];
+    areas: Sector[] = [];
 
     constructor() {
     }
