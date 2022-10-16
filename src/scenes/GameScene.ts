@@ -27,6 +27,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
+
         // this.input.mouse.disableContextMenu();
         const rect1 = this.add.rectangle(10, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
         const rect2 = this.add.rectangle(500, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
