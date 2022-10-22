@@ -143,19 +143,63 @@ export namespace CQGAMETYPES {
     }
 
     export class OPTIONS {
+        /** Game Version */
         version: number;
+        /** Game Type:
+         * - Kill all units
+         * - HQ Plats
+         * - Kill Plast + Fabs
+         * */
         gameType: GAMETYPE = 3;
         gameSpeed: number = 5;	// need enough bits for -16 to 15
+
         regenOn: number = 1;
         spectatorsOn: number = 1;
         lockDiplomacyOn: number = 1;
+
+        /** Number of system to use - Max 16!*/
         numSystems: number = 5;
+
+        /** Starting resource
+         * - Low
+         * - Med
+         * - High
+         * */
         money: MONEY = 2;
+
         mapType: MAPTYPE = 2;
+
+        /** Generation Template
+         * - Pure Random
+         * - Random
+         * - Star
+         * - Ring*/
         templateType: RANDOM_TEMPLATE = 2;
+
+        /** Map Size
+         * - Small
+         * - Medium
+         * - Large */
         mapSize: MAPSIZE = 2;
+
+        /** Terrain Type
+         * - Light
+         * - Medium
+         * - Heavy */
         terrain: TERRAIN = 2;
+
+        /** Starting units
+         * - Minimal
+         * - Standard
+         * - Advanced
+         *  */
         units: STARTING_UNITS = 2;
+
+        /** Visibility
+         * - Normal
+         * - Explored
+         * - All visible
+         * */
         visibility: VISIBILITYMODE = 2;
         commandLimit: COMMANDLIMIT = 2;
     }
@@ -178,7 +222,7 @@ export class CQGame {
         this.activeSlots = 8;
         this.bHostBusy = 1;
         this.startCountdown = 4;
-        this.slot = new Array(MAX_PLAYERS)
+        this.slot = Array(MAX_PLAYERS)
             .fill(0)
             .map((_, i) => {
                 const slot = new CQGAMETYPES.SLOT(i);

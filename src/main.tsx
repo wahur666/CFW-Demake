@@ -12,6 +12,7 @@ import TERRAIN = CQGAMETYPES.TERRAIN;
 import {MapGen} from "./model/MapGen/MapGen";
 
 const fullGame = new FullCQGame(RANDOM_TEMPLATE.TEMPLATE_RANDOM, 4, MAPSIZE.SMALL_MAP, TERRAIN.LIGHT_TERRAIN);
+fullGame.numSystems = 16;
 const mapGen = new MapGen()
 const map = mapGen.GenerateMap(fullGame);
 

@@ -125,6 +125,21 @@ export class TerrainTheme {
 
 }
 
+function createTheme() {
+    const theme = new TerrainTheme();
+
+    theme.minSize = 32;
+    theme.maxSize = 36;
+    theme.sizeOk = MAP_GEN_ENUM.SECTOR_SIZE.ALL_SIZE;
+
+    return theme;
+}
+
+const themes: TerrainTheme[] = [
+    createTheme()
+]
+
+
 export class BT_MAP_GEN {
 
     themes: TerrainTheme[] = Array(MAX_THEMES).fill(0).map(() => new TerrainTheme());

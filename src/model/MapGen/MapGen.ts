@@ -83,30 +83,36 @@ class FlagPost {
 }
 
 class GenSystem {
-    flags: FlagPost[] = Array(MAX_FLAGS);
-    numFlags: number;
+    flags: FlagPost[] = Array(MAX_FLAGS).fill(0).map(() => new FlagPost());
+    numFlags: number = 0;
 
-    sectorGridX: number;
-    sectorGridY: number;
-    index: number;
+    sectorGridX: number = 0;
+    sectorGridY: number = 0;
+    index: number = 0;
 
-    planetNameCount: number;
+    planetNameCount: number = 0;
 
-    x: number;
-    y: number;
-    size: number;
-    jumpgateCount: number;
-    distToSystem: number[] = Array(MAX_SYSTEMS);
-    jumpgates: GenJumpgate[] = Array(MAX_SYSTEMS);
-    systemId: number;
-    playerId: number;
-    connectionOrder: number;
-    playerDistToSystem: number[][] = Array(MAX_PLAYERS).fill(Array(MAX_SYSTEMS));
-    theme: TerrainTheme;
+    x: number = 0;
+    y: number = 0;
+    size: number = 0;
+    jumpgateCount: number = 0;
+    distToSystem: number[] = Array(MAX_SYSTEMS).fill(0);
+    jumpgates: GenJumpgate[] = Array(MAX_SYSTEMS).fill(0).map(() => new GenJumpgate());
+    systemId: number = 0;
+    playerId: number = 0;
+    connectionOrder: number = 0;
+    playerDistToSystem: number[][] =
+        Array(MAX_PLAYERS)
+            .fill(0)
+            .map(() => Array(MAX_SYSTEMS).fill(0));
+    theme: TerrainTheme = new TerrainTheme();
 
-    omStartEmpty: number;
-    omUsed: number;
-    objectMap: number[][] = Array(MAX_MAP_GRID).fill(Array(MAX_MAP_GRID));
+    omStartEmpty: number = 0;
+    omUsed: number = 0;
+    objectMap: number[][] =
+        Array(MAX_MAP_GRID)
+            .fill(0)
+            .map(() => Array(MAX_MAP_GRID).fill(0));
 
     constructor() {
     }
@@ -136,37 +142,38 @@ class GenSystem {
 
 
 class GenJumpgate {
-    system1: GenSystem;
-    system2: GenSystem;
-    x1: number;
-    y1: number;
-    x2: number;
-    y2: number;
-    dist: number;
+    system1: GenSystem | null = null;
+    system2: GenSystem | null = null;
+    x1: number = 0;
+    y1: number = 0;
+    x2: number = 0;
+    y2: number = 0;
+    dist: number = 0;
     created: boolean = true;
 }
 
 class GenStruct {
-    data: BT_MAP_GEN;
+    data: BT_MAP_GEN | null = null;
 
-    numPlayers: number;
+    numPlayers: number = 0;
 
-    sectorSize: number;
-    sectorGrid: number[] = Array(17);
+    sectorSize: number = 0;
+    sectorGrid: number[] = Array<number>(17).fill(0);
 
-    gameSize: number;
-    sectorLayout: MAP_GEN_ENUM.SECTOR_FORMATION;
+    gameSize: number = 0;
+    sectorLayout: MAP_GEN_ENUM.SECTOR_FORMATION = MAP_GEN_ENUM.SECTOR_FORMATION.SF_RANDOM;
 
-    systemsToMake: number;
+    systemsToMake: number = 0;
 
-    terrainSize: number;
+    terrainSize: number = 0;
 
-    objectBoarder: number;
-    systems: GenSystem[] = Array(MAX_SYSTEMS);
-    systemCount: number;
+    objectBoarder: number = 0;
+    systems: GenSystem[] = Array(MAX_SYSTEMS).fill(0).map(() => new GenSystem());
+    systemCount: number = 0;
 
-    jumpgate: GenJumpgate[] = Array(MAX_SYSTEMS / MAX_SYSTEMS)
-    numJumpGates: number;
+    jumpgate: GenJumpgate[] = Array(MAX_SYSTEMS * MAX_SYSTEMS).fill(0)
+        .map(() => new GenJumpgate())
+    numJumpGates: number = 0;
 }
 
 export class MapGen implements IMapGen {
@@ -186,7 +193,7 @@ export class MapGen implements IMapGen {
 
     GetBestSystemNumber(game: FullCQGame, approxNumber: number): number {
         let numPlayers = 0;
-        const assignments = new Array(MAX_PLAYERS + 1).fill(0);
+        const assignments = Array(MAX_PLAYERS + 1).fill(0);
         let i;
         for (i = 0; i < game.activeSlots; ++i) {
             if ((game.slot[i].state === STATE.READY) || (game.slot[i].state === STATE.ACTIVE)) {
@@ -209,16 +216,16 @@ export class MapGen implements IMapGen {
                     if (number <= approxNumber) {
                         return number;
                     }
-                    return 1 + numPlayers;
                 }
+                return 1 + numPlayers;
             } else if (numPlayers < 8) {
                 for (i = 2; i > 0; --i) {
                     const number = 1 + (i * numPlayers);
                     if (number <= approxNumber) {
                         return number;
                     }
-                    return 1 + numPlayers;
                 }
+                return 1 + numPlayers;
             } else {
                 return 9;
             }
@@ -294,7 +301,9 @@ export class MapGen implements IMapGen {
     //Util funcs
 
     GetRand(min: number, max: number, mapFunc: MAP_GEN_ENUM.DMAP_FUNC): number {
-        return 0;
+        let val = randFunc[mapFunc]() % (max + 1);
+        val = val + min;
+        return val;
     }
 
     GenerateSystems(map: GenStruct) {
@@ -311,20 +320,51 @@ export class MapGen implements IMapGen {
         let s1: number;
         for (s1 = 0; s1 < map.numPlayers; s1++) {
             let system1: GenSystem = map.systems[s1];
-            system1;
+            do {
+                const val = this.GetRand(0, RND_MAX_PLAYER_SYSTEMS - 1, MAP_GEN_ENUM.DMAP_FUNC.LINEAR);
+                system1.sectorGridX = rndPlayerX[val];
+                system1.sectorGridY = rndPlayerY[val];
+                system1.connectionOrder = val;
+            } while (this.SystemsOverlap(map, system1))
 
+            map.sectorGrid[system1.sectorGridX] |= (0x00000001 << system1.sectorGridY);
+
+            system1.index = s1;
+            system1.playerId = s1 + 1;
+
+            map.systemCount++;
+        }
+        for (s1 = map.numPlayers; s1 < map.systemsToMake; s1++) {
+            const system1: GenSystem = map.systems[s1];
+
+            do {
+                const val = this.GetRand(0, RND_MAX_REMOTE_SYSTEMS - 1, MAP_GEN_ENUM.DMAP_FUNC.LINEAR);
+                system1.sectorGridX = rndRemoteX[val];
+                system1.sectorGridY = rndRemoteY[val];
+            } while (this.SystemsOverlap(map, system1));
+
+            map.sectorGrid[system1.sectorGridX] |= (0x00000001 << system1.sectorGridY);
+
+            system1.index = s1;
+
+            map.systemCount++;
         }
     };
 
     generateSystemsRing(map: GenStruct) {
-
+        throw Error("Ring system not implemented")
     };
 
     generateSystemsStar(map: GenStruct) {
-
+        throw Error("Star system not implemented")
     };
 
     SystemsOverlap(map: GenStruct, system: GenSystem): boolean {
+        for (let count = 0; count < map.systemCount; count++) {
+            if (((map.sectorGrid[system.sectorGridX]) >> system.sectorGridY) & 0x01) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -345,7 +385,12 @@ export class MapGen implements IMapGen {
     }
 
     SelectThemes(map: GenStruct) {
-
+        let playerThemeCount = 0;
+        let i;
+        for (i = 0; i < MAX_THEMES; ++i) {
+            // if(map.data?.themes[i].okForPlayerStart)
+            console.log(map.data?.themes[i].okForPlayerStart && (map.data?.themes[i].sizeOk & (0x01 << map.gameSize)))
+        }
     }
 
     CreateSystems(map: GenStruct) {
@@ -364,7 +409,7 @@ export class MapGen implements IMapGen {
         return {x: 0, y: 0}
     }
 
-    createPlanetFromList(xPos: number, yPos: number, system: GenSystem, range: number, planetList: string[] = new Array(GT_PATH)) {
+    createPlanetFromList(xPos: number, yPos: number, system: GenSystem, range: number, planetList: string[] = Array(GT_PATH).fill("")) {
 
     }
 
