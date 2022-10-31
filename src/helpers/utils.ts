@@ -14,3 +14,15 @@ export const formatTime = (s: number) => (s - (s %= 60)) / 60 + (9 < s ? ":" : "
 
 export const d2r = Phaser.Math.DegToRad;
 
+export const zeroMatrix = (width: number, height = width): number[][] => {
+    const mat: number[][] = [];
+    for (let i = 0; i < width; i++) {
+        const s: number[] = [];
+        for (let j = 0; j < height; j++) {
+            s.push(0);
+        }
+        mat.push(s);
+    }
+    return mat;
+}
+
