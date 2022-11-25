@@ -2,21 +2,22 @@ import GameScene from "./scenes/GameScene";
 import Phaser from "phaser";
 import PreloadScene from "./scenes/PreloadScene";
 import "./style.scss";
-import { SHARED_CONFIG } from "./model/config";
-import { Component, ComponentChild, createRef, RenderableProps } from "preact";
-import ScaleModes = Phaser.Scale.ScaleModes;
+import {SHARED_CONFIG} from "./model/config";
+import {Component, ComponentChild, createRef, RenderableProps} from "preact";
 import TestScene from "./scenes/TestScene";
 import EditorButton from "./components/EditorButton";
-import EditorArea from "./components/EditorArea";
 import {signal} from "@preact/signals";
+import {SectorObjectMasks} from "./entity/SectorObject";
+import ScaleModes = Phaser.Scale.ScaleModes;
 
 interface IProps {}
 
 interface IState {}
 
 const guiVisible = signal<boolean>(false);
+const objectMode = signal<SectorObjectMasks>(SectorObjectMasks.OrePatch);
 
-export {guiVisible}
+export {guiVisible, objectMode}
 
 export default class Game extends Component<IProps, IState> {
     game: Phaser.Game;
@@ -72,7 +73,7 @@ export default class Game extends Component<IProps, IState> {
                         <EditorButton cb={() => console.log("yeet")} name={"Gas"}/>
                         <EditorButton cb={() => console.log("yeet")} name={"Ore"}/>
                         <EditorButton cb={() => console.log("yeet")} name={"Generate string"}/>
-                        <EditorArea/>
+                        {/*<EditorArea/>*/}
                     </div>
                 </div>}
                 <canvas id={"cv1"} ref={this.canvas} />
