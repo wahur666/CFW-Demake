@@ -63,7 +63,7 @@ export default class Game extends Component<IProps, IState> {
     ): ComponentChild {
         return (
             <>
-                {guiVisible.value && <div className="absolute-zero disable-pointer-event flex flex-row-reverse">
+                {guiVisible.value && <div className="absolute-zero disable-pointer-event flex flex-row-reverse ">
                     <div className="flex flex-col items-center justify-center">
                         <EditorButton cb={() => console.log("yeet")} name={"Habitable Planet"}/>
                         <EditorButton cb={() => console.log("yeet")} name={"Rocky Planet"}/>
