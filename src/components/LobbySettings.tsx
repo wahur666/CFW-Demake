@@ -56,31 +56,21 @@ export default function LobbySettings() {
                 </Text>
                 <select name="battle-map" id="battle-map" style={{
                     width: 150,
-                    height: 30
+                    height: 35
                 }}>
                     {Object.values(BattleMap).map(e =>
                         <option value={e.toLowerCase()}>{e}</option>
                     )}
                 </select>
             </div>
-            <div className={"flex justify-between"}>
-                <Text className={"m-0 flex-important flex-col justify-center"}>
-                    Game Speed
-                </Text>
-                <select name="battle-map" id="battle-map" style={{
-                    width: 150,
-                    height: 30
-                }}>
-                    <option value="random">Random</option>
-                </select>
-            </div>
+
             <div className={"flex justify-between"}>
                 <Text className={"m-0 flex-important flex-col justify-center"}>
                     Starting resource
                 </Text>
                 <select name="battle-map" id="battle-map" style={{
                     width: 150,
-                    height: 30
+                    height: 35
                 }}>
                     {Object.values(StartingResource).map(x =>
                         <option value={x.toLowerCase()}>{x}</option>
@@ -93,7 +83,7 @@ export default function LobbySettings() {
                 </Text>
                 <select name="battle-map" id="battle-map" style={{
                     width: 150,
-                    height: 30
+                    height: 35
                 }}>
                     { range(16).map(x =>
                         <option value={x + 1}>{x + 1}</option>
@@ -106,9 +96,11 @@ export default function LobbySettings() {
                 </Text>
                 <select name="battle-map" id="battle-map" style={{
                     width: 150,
-                    height: 30
+                    height: 35
                 }}>
-                    <option value="random">Random</option>
+                    {Object.values(MapSize).map(x =>
+                        <option value={x.toLowerCase()}>{x}</option>
+                    )}
                 </select>
             </div>
             <div className={"flex justify-between"}>
@@ -117,9 +109,11 @@ export default function LobbySettings() {
                 </Text>
                 <select name="battle-map" id="battle-map" style={{
                     width: 150,
-                    height: 30
+                    height: 35
                 }}>
-                    <option value="random">Random</option>
+                    {Object.values(Terrain).map(x =>
+                        <option value={x.toLowerCase()}>{x}</option>
+                    )}
                 </select>
             </div>
             <div className={"flex justify-between"}>
@@ -128,9 +122,11 @@ export default function LobbySettings() {
                 </Text>
                 <select name="battle-map" id="battle-map" style={{
                     width: 150,
-                    height: 30
+                    height: 35
                 }}>
-                    <option value="random">Random</option>
+                    {Object.values(Visibility).map(x =>
+                        <option value={x.toLowerCase()}>{x}</option>
+                    )}
                 </select>
             </div>
             <div className={"flex justify-between"}>
@@ -139,9 +135,11 @@ export default function LobbySettings() {
                 </Text>
                 <select name="battle-map" id="battle-map" style={{
                     width: 150,
-                    height: 30
+                    height: 35
                 }}>
-                    <option value="random">Random</option>
+                    {Object.values(StartingBase).map(x =>
+                        <option value={x.toLowerCase()}>{x}</option>
+                    )}
                 </select>
             </div>
         </div>

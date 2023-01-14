@@ -6,6 +6,10 @@
   height: 100%;
 }
 
+@mixin w-100 {
+  width: 100%;
+}
+
 .scale-2 {
   transform: scale(2);
 }
@@ -14,14 +18,18 @@
   @include h-100;
 }
 
+.w-100 {
+  @include w-100;
+}
+
 #app {
   @include h-100;
 }
 
 .lobby-grid {
   display: grid;
-  //grid-template-columns: repeat(5, 1fr);
-  //grid-auto-rows: minmax(100px, auto);
+  column-gap: 15px;
+  row-gap: 15px;
   grid-template-areas:
   "hd hd hd hd hd"
   "ps ps ps ps cp"
@@ -58,4 +66,8 @@
 
 .flex-important {
   display: flex !important;
+}
+
+.flex-1 {
+  flex: 1;
 }

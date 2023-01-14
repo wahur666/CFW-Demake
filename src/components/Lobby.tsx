@@ -1,8 +1,10 @@
-import {Component, ComponentChild, h, RenderableProps} from "preact";
-import {ArwesThemeProvider, Button, FrameHexagon, StylesBaseline, Table, Text} from "@arwes/core";
-import PlayerControl from "./PlayerControl";
+import {Component, ComponentChild, RenderableProps} from "preact";
+import {ArwesThemeProvider, StylesBaseline, Text, FrameLines} from "@arwes/core";
 import LobbyFooter from "./LobbyFooter";
 import LobbySettings from "./LobbySettings";
+import LobbyControl from "./LobbyControl";
+import LobbyChat from "./LobbyChat";
+import LobbyPlayers from "./LobbyPlayers";
 
 interface LobbyState {
 
@@ -23,57 +25,25 @@ export default class Lobby extends Component<LobbyProps, LobbyState> {
                         body: {fontFamily: FONT_FAMILY_ROOT},
                     }}
                 />
-                <FrameHexagon
+                <FrameLines
                     animator={{
                         animate: true
                     }}
-                    // lineWidth={2}
-                    // squareSize={35}
                     hideShapes
-                    hover
                 >
                     <div className={"lobby-grid"}>
-
                         <div className="mb-4 header flex justify-center">
                             <Text as={"h1"} className="mb-0">
                                 Quick battle
                             </Text>
                         </div>
-
-                        <div className={"flex flex-col items-center chat"}>
-                            <FrameHexagon className={"m-1 p-1"}>
-                                <div style={{
-                                    width: 600,
-                                    height: 20,
-                                }} >
-                                    Aa
-                                </div>
-                            </FrameHexagon>
-                            <FrameHexagon className={"m-1 p-1"}>
-                                <div style={{
-                                    width: 600,
-                                    height: 120,
-                                }} >
-                                    Bb
-                                </div>
-                            </FrameHexagon>
-                        </div>
-
-
-                        <div className="control-points" >
-                            <div className="flex flex-col h-100 items-center justify-center m-1">
-                                <input type="range" id="test5" min="100" max="300" step="50"/>
-                                <p>{100}</p>
-                            </div>
-                        </div>
-
-                        <div className={"player-selection"}>
-                            {Array(8).fill(1).map(_ => <PlayerControl/>)}
-                        </div>
+                        <LobbyChat/>
+                        <LobbyControl/>
+                        <LobbyPlayers />
                         <LobbySettings/>
-                        <LobbyFooter />
+                        <LobbyFooter/>
                     </div>
-                </FrameHexagon>
+                </FrameLines>
 
             </ArwesThemeProvider>
         </div>;
