@@ -43,7 +43,7 @@ export default function PlayerControl() {
                         )}
                     </select>
                     <select name="team" id="team" className={"m-1"}>
-                        <option value=".." selected>..</option>
+                        <option value={0} selected>..</option>
                         {range(4).map(x =>
                             <option value={x + 1}>{x + 1}</option>
                         )}
