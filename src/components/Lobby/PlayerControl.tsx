@@ -1,4 +1,4 @@
-import {range} from "../helpers/utils";
+import {range} from "../../helpers/utils";
 import {useState} from "preact/compat";
 
 

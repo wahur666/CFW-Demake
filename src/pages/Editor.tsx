@@ -1,17 +1,20 @@
-import GameScene from "./scenes/GameScene";
 import Phaser from "phaser";
-import PreloadScene from "./scenes/PreloadScene";
-import "./style.scss";
-import {SHARED_CONFIG} from "./model/config";
 import {Component, ComponentChild, createRef, RenderableProps} from "preact";
-import TestScene from "./scenes/TestScene";
-import EditorButton from "./components/EditorButton";
 import {signal} from "@preact/signals";
-import {SectorObjectMasks} from "./entity/SectorObject";
+
+import {SHARED_CONFIG} from "../model/config";
+import EditorScene from "../scenes/EditorScene";
+import PreloadScene2 from "../scenes/PreloadScene2";
+import EditorButton from "../components/Editor/EditorButton";
+import {SectorObjectMasks} from "../entity/SectorObject";
+
 import ScaleModes = Phaser.Scale.ScaleModes;
 
-interface IProps {}
+import "../style.scss";
+import {route} from "preact-router";
+import {PageRoutes} from "./routes";
 
+interface IProps {}
 interface IState {}
 
 const guiVisible = signal<boolean>(false);
@@ -19,7 +22,7 @@ const objectMode = signal<SectorObjectMasks>(SectorObjectMasks.OrePatch);
 
 export {guiVisible, objectMode}
 
-export default class Game extends Component<IProps, IState> {
+export default class Editor extends Component<IProps, IState> {
     game: Phaser.Game;
 
     canvas = createRef<HTMLCanvasElement>();
@@ -27,7 +30,7 @@ export default class Game extends Component<IProps, IState> {
     config: Phaser.Types.Core.GameConfig & typeof SHARED_CONFIG = {
         ...SHARED_CONFIG,
         type: Phaser.WEBGL,
-        scene: [PreloadScene, TestScene, GameScene],
+        scene: [PreloadScene2, EditorScene],
         scale: {
             mode: ScaleModes.RESIZE,
         },
@@ -73,6 +76,7 @@ export default class Game extends Component<IProps, IState> {
                         <EditorButton cb={() => console.log("yeet")} name={"Gas"}/>
                         <EditorButton cb={() => console.log("yeet")} name={"Ore"}/>
                         <EditorButton cb={() => console.log("yeet")} name={"Generate string"}/>
+                        <EditorButton cb={() => route(PageRoutes.ROOT)} name={"Back!"}/>
                         {/*<EditorArea/>*/}
                     </div>
                 </div>}

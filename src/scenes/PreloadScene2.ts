@@ -17,7 +17,7 @@ export enum Images {
 }
 
 
-export default class PreloadScene extends Phaser.Scene {
+export default class PreloadScene2 extends Phaser.Scene {
     loadingText: Phaser.GameObjects.Text;
     background: Phaser.GameObjects.Rectangle;
     foreground: Phaser.GameObjects.Rectangle;
@@ -57,7 +57,7 @@ export default class PreloadScene extends Phaser.Scene {
         this.foreground.destroy();
         this.background.destroy();
         this.loadingText.destroy();
-        this.scene.start(SceneRegistry.GAME);
+        this.scene.start(SceneRegistry.EDITOR);
     }
 
 }

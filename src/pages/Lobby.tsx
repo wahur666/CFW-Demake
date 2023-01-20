@@ -1,18 +1,13 @@
 import {Component, ComponentChild, RenderableProps} from "preact";
 import {ArwesThemeProvider, StylesBaseline, Text, FrameLines} from "@arwes/core";
-import LobbyFooter from "./LobbyFooter";
-import LobbySettings from "./LobbySettings";
-import LobbyControl from "./LobbyControl";
-import LobbyChat from "./LobbyChat";
-import LobbyPlayers from "./LobbyPlayers";
+import LobbyFooter from "../components/Lobby/LobbyFooter";
+import LobbySettings from "../components/Lobby/LobbySettings";
+import LobbyControl from "../components/Lobby/LobbyControl";
+import LobbyChat from "../components/Lobby/LobbyChat";
+import LobbyPlayers from "../components/Lobby/LobbyPlayers";
 
-interface LobbyState {
-
-}
-
-interface LobbyProps {
-
-}
+interface LobbyState { }
+interface LobbyProps { }
 
 const FONT_FAMILY_ROOT = '"Titillium Web", sans-serif';
 

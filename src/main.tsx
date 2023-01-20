@@ -1,27 +1,21 @@
 import "preact/debug"
-import {h, render} from "preact";
-import Game from "./game";
-import "./style.scss";
+import {render} from "preact";
 import Router from "preact-router";
-import {App} from "./app";
-import {FullCQGame} from "./model/Base/CQGame";
-import {CQGAMETYPES} from "./model/Base/DCQGame";
-import RANDOM_TEMPLATE = CQGAMETYPES.RANDOM_TEMPLATE;
-import MAPSIZE = CQGAMETYPES.MAPSIZE;
-import TERRAIN = CQGAMETYPES.TERRAIN;
-import {MapGen} from "./model/MapGen/MapGen";
-import Lobby from "./components/Lobby";
-// const fullGame = new FullCQGame(RANDOM_TEMPLATE.TEMPLATE_RANDOM, 4, MAPSIZE.SMALL_MAP, TERRAIN.LIGHT_TERRAIN);
-// fullGame.numSystems = 16;
-// const mapGen = new MapGen()
-// const map = mapGen.GenerateMap(fullGame);
 
+import Editor from "./pages/Editor";
+import Game from "./pages/Game";
+import Root from "./pages/Root";
 
+import Lobby from "./pages/Lobby";
+import {PageRoutes} from "./pages/routes";
+
+import "./style.scss";
 render(
     <Router>
-        <App path={"/"} />
-        <Game path={"/game"} />
-        <Lobby path={"/lobby"} />
+        <Root path={PageRoutes.ROOT} />
+        <Editor path={PageRoutes.EDITOR} />
+        <Game path={PageRoutes.GAME} />
+        <Lobby path={PageRoutes.LOBBY} />
     </Router>,
     document.getElementById("app") as HTMLElement
 );

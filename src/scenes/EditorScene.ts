@@ -1,14 +1,14 @@
 import Phaser from "phaser";
 import {SHARED_CONFIG} from "../model/config";
 import {SceneRegistry} from "./SceneRegistry";
-import {guiVisible, objectMode} from "../game";
+import {guiVisible, objectMode} from "../pages/Editor";
 import {SectorObjectMasks} from "../entity/SectorObject";
 import {zeroMatrix} from "../helpers/utils";
 import Vector2 = Phaser.Math.Vector2;
 import Pointer = Phaser.Input.Pointer;
 
 
-export default class TestScene extends Phaser.Scene {
+export default class EditorScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
 
     squareSize = 20
@@ -21,7 +21,7 @@ export default class TestScene extends Phaser.Scene {
     drawSize = 2
 
     constructor() {
-        super(SceneRegistry.TEST);
+        super(SceneRegistry.EDITOR);
         this.config = SHARED_CONFIG;
         this.sectorMap = zeroMatrix(this.sectorSize);
         this.currentMask = SectorObjectMasks.OrePatch;

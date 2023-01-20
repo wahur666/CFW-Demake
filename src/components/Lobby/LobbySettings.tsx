@@ -1,5 +1,5 @@
 import {FrameHexagon, Text} from "@arwes/core";
-import {range} from "../helpers/utils";
+import {range} from "../../helpers/utils";
 
 export enum BattleMap {
     RANDOM = "Random",

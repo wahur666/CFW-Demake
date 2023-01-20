@@ -1,18 +1,13 @@
 import { ArwesThemeProvider, Button, StylesBaseline, Text } from "@arwes/core";
-import "./app.scss";
+import "../app.scss";
 import { route } from "preact-router";
+import {PageRoutes} from "./routes";
 const FONT_FAMILY_ROOT = '"Titillium Web", sans-serif';
 
-export function App({ path: string }) {
-    const gotoGame = (event) => {
-        console.log(event);
-        route("/game", true);
-    };
-
-    const gotoLobby = (event) => {
-        route("/lobby", true);
-    }
-
+export default function Root({ path: string }) {
+    const gotoGame = (event) => route(PageRoutes.GAME, true);
+    const gotoLobby = (event) => route(PageRoutes.LOBBY, true);
+    const goToEditor = (event) => route(PageRoutes.EDITOR, true);
 
     return (
         <div className="grid place-content-center h-100 scale-2">
@@ -33,10 +28,10 @@ export function App({ path: string }) {
 
                 <div className={"flex flex-col items-center"}>
                     <Button className="w-40" animator={{ animate: true }} onClick={gotoGame}>
-                        <Text>Host Game</Text>
+                        <Text>Game</Text>
                     </Button>
-                    <Button animator={{ animate: true }} className="w-40">
-                        <Text>Join Game</Text>
+                    <Button animator={{ animate: true }} className="w-40" onClick={goToEditor}>
+                        <Text>Editor</Text>
                     </Button>
                     <Button animator={{ animate: true }} className="w-40" onClick={gotoLobby}>
                         <Text>Lobby</Text>
