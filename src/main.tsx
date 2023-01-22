@@ -10,12 +10,14 @@ import Lobby from "./pages/Lobby";
 import {PageRoutes} from "./pages/routes";
 
 import "./style.scss";
+import PathFindingTest from "./pages/PathFindingTest";
 render(
     <Router>
         <Root path={PageRoutes.ROOT} />
         <Editor path={PageRoutes.EDITOR} />
         <Game path={PageRoutes.GAME} />
         <Lobby path={PageRoutes.LOBBY} />
+        <PathFindingTest path={PageRoutes.PATHFINDING_TEST} />
     </Router>,
     document.getElementById("app") as HTMLElement
 );
