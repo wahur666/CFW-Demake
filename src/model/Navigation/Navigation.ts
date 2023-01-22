@@ -31,19 +31,18 @@ export class Navigation {
     neighbour(pos: Vector2): Vector2[] {
         const neighbours: Vector2[] = [];
         const toVec2 = (arr: number[]): Vector2 => new Vector2(arr[0], arr[1]);
-        const possibleNeighbours: Vector2[] = [
+        const directions: Vector2[] = [
             [-1, -1], [-1, 0], [-1, 1],
             [0, -1], [0, 1],
             [1, -1], [1, 0], [1, 1]
         ].map(toVec2)
-        for (const possibleNeighbour of possibleNeighbours) {
-            const newPos = pos.clone().add(possibleNeighbour);
-            console.log("new pos", newPos);
+        for (const direction of directions) {
+            const newPos = pos.clone().add(direction);
             if (newPos.x < 0 || newPos.y < 0 || newPos.x > this.map.size || newPos.y > this.map.size) {
                 continue;
             }
-            if (this.map.sectorMap[pos.x][pos.y] === 1) {
-                neighbours.push(possibleNeighbour);
+            if (this.map.sectorMap[newPos.x][newPos.y] === 1) {
+                neighbours.push(newPos);
             }
         }
         for (const wormhole of this.map.wormholes) {
@@ -69,7 +68,6 @@ export class Navigation {
     public findPath(start: Vector2, end: Vector2): Vector2[] {
         if (this.map.sectorMap[start.x][start.y] === 0 ||
             this.map.sectorMap[end.x][end.y] === 0)  {
-            console.error("unable to find path");
             return [];
         }
         const open = new Heap<Node>((a, b) => {
@@ -93,13 +91,8 @@ export class Navigation {
                     node.gCost = newMovementCostToNeighbour;
                     node.hCost = node.cost(end);
                     node.parent = current;
-                    console.log(open, closed)
                     if (!open.contains(node, (a, b) => a.pos.equals(b.pos))) {
                         open.add(node);
-                    }
-                    if (open.size() > 100) {
-                        console.error("fucked", open.heapArray);
-                        break;
                     }
                 }
             }
