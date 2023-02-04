@@ -3,12 +3,25 @@ import Vector2 = Phaser.Math.Vector2;
 import GameMap from "../GameMap";
 
 class Node {
-    public parent: Node | undefined = undefined;
+    position: Vector2;
+    neighbours: Node[];
+    constructor(pos: Vector2) {
+        this.position = pos;
+        this.neighbours = [];
+    }
+
+    distance(otherNode: Node): number {
+        return 0;
+    }
+}
+
+class NavigationNode {
+    public parent: NavigationNode | undefined = undefined;
     public gCost: number;
     public hCost: number;
-    constructor(public pos: Vector2,
-                start: Vector2,
-                end: Vector2) {
+    constructor(public node: Node,
+                start: Node,
+                end: Node) {
         this.gCost = this.cost(start);
         this.hCost = this.cost(end);
     }
@@ -17,16 +30,10 @@ class Node {
         return this.gCost + this.hCost;
     }
 
-    cost(otherPos: Vector2) {
-        return this.pos.distance(otherPos);
+    cost(otherNode: Node) {
+        return this.node.distance(otherNode);
     }
 
-}
-
-
-export class Navigation {
-
-    constructor(private map: GameMap) {}
 
     neighbour(pos: Vector2): Vector2[] {
         const neighbours: Vector2[] = [];
@@ -53,45 +60,54 @@ export class Navigation {
         return neighbours;
     }
 
-    private createNode(pos: Vector2, start: Vector2, end: Vector2): Node {
-        return new Node(pos, start, end);
-    }
 
-    private nodeNeighbours(node: Node, start: Vector2, end: Vector2): Node[] {
-        const neighbours: Node[] = [];
-        for (const pos of this.neighbour(node.pos)) {
+    nodeNeighbours(node: NavigationNode, start: Vector2, end: Vector2): NavigationNode[] {
+        const neighbours: NavigationNode[] = [];
+        for (const pos of this.neighbour(node.node)) {
             neighbours.push(this.createNode(pos, start, end));
         }
         return neighbours;
     }
+
+}
+
+
+export class Navigation {
+
+    constructor(private map: GameMap) {}
+
+    private createNode(pos: Vector2, start: Vector2, end: Vector2): NavigationNode {
+        return new NavigationNode(pos, start, end);
+    }
+
 
     public findPath(start: Vector2, end: Vector2): Vector2[] {
         if (this.map.sectorMap[start.x][start.y] === 0 ||
             this.map.sectorMap[end.x][end.y] === 0)  {
             return [];
         }
-        const open = new Heap<Node>((a, b) => {
+        const open = new Heap<NavigationNode>((a, b) => {
             return a.fCost - b.fCost || a.hCost - b.hCost;
         });
         open.push(this.createNode(start, start, end));
-        const closed: Node[] = [];
+        const closed: NavigationNode[] = [];
         while (open.size() !== 0) {
             const current = open.pop();
             if (!current) {
                 continue;
             }
             closed.push(current);
-            if (current.pos.equals(end)) {
+            if (current.node.equals(end)) {
                 return this.retracePath(start, current);
             }
 
             for (const node of this.nodeNeighbours(current, start, end)) {
-                const newMovementCostToNeighbour = current.cost(start) + current.cost(node.pos);
+                const newMovementCostToNeighbour = current.cost(start) + current.cost(node.node);
                 if (newMovementCostToNeighbour < node.cost(start) || !open.contains(node)) {
                     node.gCost = newMovementCostToNeighbour;
                     node.hCost = node.cost(end);
                     node.parent = current;
-                    if (!open.contains(node, (a, b) => a.pos.equals(b.pos))) {
+                    if (!open.contains(node, (a, b) => a.node.equals(b.node))) {
                         open.add(node);
                     }
                 }
@@ -100,10 +116,10 @@ export class Navigation {
         return [];
     }
 
-    private retracePath(start: Vector2, current: Node): Vector2[] {
+    private retracePath(start: Vector2, current: NavigationNode): Vector2[] {
         let path: Vector2[] = [];
         while (current.parent) {
-            path.unshift(current.pos);
+            path.unshift(current.node);
             current = current.parent;
         }
         path.unshift(start);
