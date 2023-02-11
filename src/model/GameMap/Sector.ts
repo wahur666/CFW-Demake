@@ -1,5 +1,5 @@
-import Wormhole from "../entity/Wormhole";
-import GameScene from "../scenes/GameScene";
+import Wormhole from "../../entity/Wormhole";
+import GameScene from "../../scenes/GameScene";
 
 
 export default class Sector {

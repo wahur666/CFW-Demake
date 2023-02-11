@@ -1,19 +1,7 @@
 import Heap from "heap-js";
 import Vector2 = Phaser.Math.Vector2;
-import GameMap from "../GameMap";
+import GameMap from "../GameMap/GameMap";
 
-class Node {
-    position: Vector2;
-    neighbours: Node[];
-    constructor(pos: Vector2) {
-        this.position = pos;
-        this.neighbours = [];
-    }
-
-    distance(otherNode: Node): number {
-        return 0;
-    }
-}
 
 class NavigationNode {
     public parent: NavigationNode | undefined = undefined;
