@@ -1,33 +1,22 @@
-import Vector2 = Phaser.Math.Vector2;
+import {Node} from "./GameMap";
 
 export default class WormholeObject {
-    x1: number;
-    y1: number;
-    x2: number;
-    y2: number;
-    distance: number = 2;
 
+    node1: Node;
+    node2: Node;
+    distance: number;
 
-    constructor(x1: number, y1: number, x2: number, y2: number) {
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
+    constructor(node1: Node, node2: Node, distance: number) {
+        this.node1 = node1;
+        this.node2 = node2;
+        this.distance = distance;
     }
 
-    get pos1(): Vector2 {
-        return new Vector2(this.x1, this.y1);
+    isConnected(node: Node): boolean {
+        return this.node1.equals(node) || this.node2.equals(node);
     }
 
-    get pos2(): Vector2 {
-        return new Vector2(this.x2, this.y2);
-    }
-
-    isConnected(pos: Vector2): boolean {
-        return this.pos1.equals(pos) || this.pos2.equals(pos);
-    }
-
-    getOtherPos(pos: Vector2): Vector2 {
-        return this.pos1.equals(pos) ? this.pos2 : this.pos1;
+    getOtherNode(node: Node): Node {
+        return this.node1.equals(node) ? this.node2 : this.node1;
     }
 }

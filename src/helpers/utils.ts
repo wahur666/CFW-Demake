@@ -26,3 +26,15 @@ export const zeroMatrix = (width: number, height = width): number[][] => {
     return mat;
 }
 
+export const nullMatrix = <T>(width: number, height = width): (T | null)[][] => {
+    const mat: (T | null)[][] = [];
+    for (let i = 0; i < width; i++) {
+        const s: (T | null)[] = [];
+        for (let j = 0; j < height; j++) {
+            s.push(null);
+        }
+        mat.push(s);
+    }
+    return mat;
+}
+

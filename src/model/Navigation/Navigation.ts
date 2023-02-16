@@ -1,6 +1,7 @@
 import Heap from "heap-js";
 import Vector2 = Phaser.Math.Vector2;
 import GameMap from "../GameMap/GameMap";
+import {Node} from "../GameMap/GameMap";
 
 
 class NavigationNode {
@@ -8,53 +9,18 @@ class NavigationNode {
     public gCost: number;
     public hCost: number;
     constructor(public node: Node,
-                start: Node,
-                end: Node) {
-        this.gCost = this.cost(start);
-        this.hCost = this.cost(end);
+                startNode: Node,
+                endNode: Node) {
+        this.gCost = this.node.distance(startNode);
+        this.hCost = this.node.distance(endNode);
     }
 
     get fCost(): number {
         return this.gCost + this.hCost;
     }
 
-    cost(otherNode: Node) {
-        return this.node.distance(otherNode);
-    }
-
-
-    neighbour(pos: Vector2): Vector2[] {
-        const neighbours: Vector2[] = [];
-        const toVec2 = (arr: number[]): Vector2 => new Vector2(arr[0], arr[1]);
-        const directions: Vector2[] = [
-            [-1, -1], [-1, 0], [-1, 1],
-            [0, -1], [0, 1],
-            [1, -1], [1, 0], [1, 1]
-        ].map(toVec2)
-        for (const direction of directions) {
-            const newPos = pos.clone().add(direction);
-            if (newPos.x < 0 || newPos.y < 0 || newPos.x > this.map.size || newPos.y > this.map.size) {
-                continue;
-            }
-            if (this.map.sectorMap[newPos.x][newPos.y] === 1) {
-                neighbours.push(newPos);
-            }
-        }
-        for (const wormhole of this.map.wormholes) {
-            if (wormhole.isConnected(pos)) {
-                neighbours.push(wormhole.getOtherPos(pos));
-            }
-        }
-        return neighbours;
-    }
-
-
-    nodeNeighbours(node: NavigationNode, start: Vector2, end: Vector2): NavigationNode[] {
-        const neighbours: NavigationNode[] = [];
-        for (const pos of this.neighbour(node.node)) {
-            neighbours.push(this.createNode(pos, start, end));
-        }
-        return neighbours;
+    weight(otherNode: Node): number {
+        return this.node.weight(otherNode);
     }
 
 }
@@ -64,14 +30,16 @@ export class Navigation {
 
     constructor(private map: GameMap) {}
 
-    private createNode(pos: Vector2, start: Vector2, end: Vector2): NavigationNode {
-        return new NavigationNode(pos, start, end);
+    private createNode(currentNode: Node, startNode: Node, endNode: Node): NavigationNode {
+        return new NavigationNode(currentNode, startNode, endNode);
+    }
+    nodeNeighbours(currentNode: NavigationNode, startNode: Node, endNode: Node): NavigationNode[] {
+        return this.map.nodeNeighbours(currentNode.node).map(e => this.createNode(e, startNode, endNode));
     }
 
-
-    public findPath(start: Vector2, end: Vector2): Vector2[] {
-        if (this.map.sectorMap[start.x][start.y] === 0 ||
-            this.map.sectorMap[end.x][end.y] === 0)  {
+    public findPath(start: Node, end: Node): Node[] {
+        if (!this.map.sectorNodeMap[start.position.x][start.position.y] ||
+            !this.map.sectorNodeMap[end.position.x][end.position.y] )  {
             return [];
         }
         const open = new Heap<NavigationNode>((a, b) => {
@@ -79,7 +47,12 @@ export class Navigation {
         });
         open.push(this.createNode(start, start, end));
         const closed: NavigationNode[] = [];
+        let counter = 0;
         while (open.size() !== 0) {
+            counter += 1;
+            if (counter > 10000) {
+                break;
+            }
             const current = open.pop();
             if (!current) {
                 continue;
@@ -90,10 +63,10 @@ export class Navigation {
             }
 
             for (const node of this.nodeNeighbours(current, start, end)) {
-                const newMovementCostToNeighbour = current.cost(start) + current.cost(node.node);
-                if (newMovementCostToNeighbour < node.cost(start) || !open.contains(node)) {
+                const newMovementCostToNeighbour = current.gCost + current.weight(node.node);
+                if (newMovementCostToNeighbour < node.node.distance(start) || !open.contains(node)) {
                     node.gCost = newMovementCostToNeighbour;
-                    node.hCost = node.cost(end);
+                    node.hCost = node.weight(end);
                     node.parent = current;
                     if (!open.contains(node, (a, b) => a.node.equals(b.node))) {
                         open.add(node);
@@ -104,8 +77,8 @@ export class Navigation {
         return [];
     }
 
-    private retracePath(start: Vector2, current: NavigationNode): Vector2[] {
-        let path: Vector2[] = [];
+    private retracePath(start: Node, current: NavigationNode): Node[] {
+        let path: Node[] = [];
         while (current.parent) {
             path.unshift(current.node);
             current = current.parent;
