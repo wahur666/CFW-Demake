@@ -3,87 +3,56 @@ import Vector2 = Phaser.Math.Vector2;
 import GameMap from "../GameMap/GameMap";
 import {Node} from "../GameMap/GameMap";
 
-
-class NavigationNode {
-    public parent: NavigationNode | undefined = undefined;
-    public gCost: number;
-    public hCost: number;
-    constructor(public node: Node,
-                startNode: Node,
-                endNode: Node) {
-        this.gCost = this.node.distance(startNode);
-        this.hCost = this.node.distance(endNode);
-    }
-
-    get fCost(): number {
-        return this.gCost + this.hCost;
-    }
-
-    weight(otherNode: Node): number {
-        return this.node.weight(otherNode);
-    }
-
+interface PriorityNode {
+    node: Node,
+    priority: number,
 }
-
 
 export class Navigation {
 
     constructor(private map: GameMap) {}
-
-    private createNode(currentNode: Node, startNode: Node, endNode: Node): NavigationNode {
-        return new NavigationNode(currentNode, startNode, endNode);
-    }
-    nodeNeighbours(currentNode: NavigationNode, startNode: Node, endNode: Node): NavigationNode[] {
-        return this.map.nodeNeighbours(currentNode.node).map(e => this.createNode(e, startNode, endNode));
-    }
 
     public findPath(start: Node, end: Node): Node[] {
         if (!this.map.sectorNodeMap[start.position.x][start.position.y] ||
             !this.map.sectorNodeMap[end.position.x][end.position.y] )  {
             return [];
         }
-        const open = new Heap<NavigationNode>((a, b) => {
-            return a.fCost - b.fCost || a.hCost - b.hCost;
-        });
-        open.push(this.createNode(start, start, end));
-        const closed: NavigationNode[] = [];
-        let counter = 0;
-        while (open.size() !== 0) {
-            counter += 1;
-            if (counter > 10000) {
-                break;
-            }
-            const current = open.pop();
-            if (!current) {
-                continue;
-            }
-            closed.push(current);
-            if (current.node.equals(end)) {
-                return this.retracePath(start, current);
+        const frontier: Heap<PriorityNode> = new Heap<PriorityNode>((a, b) => a.priority - b.priority);
+        frontier.push({node: start, priority: 0});
+        const cameFrom = new Map<Node, Node | null>;
+        const costSoFar = new Map<Node, number>;
+        cameFrom.set(start, null);
+        costSoFar.set(start, 0);
+
+        while (frontier.length !== 0) {
+            const current = frontier.pop() as PriorityNode;
+
+            if (current.node === end) {
+                break
             }
 
-            for (const node of this.nodeNeighbours(current, start, end)) {
-                const newMovementCostToNeighbour = current.gCost + current.weight(node.node);
-                if (newMovementCostToNeighbour < node.node.distance(start) || !open.contains(node)) {
-                    node.gCost = newMovementCostToNeighbour;
-                    node.hCost = node.weight(end);
-                    node.parent = current;
-                    if (!open.contains(node, (a, b) => a.node.equals(b.node))) {
-                        open.add(node);
-                    }
+            for (const next of this.map.nodeNeighbours(current.node)) {
+                const newCost = (costSoFar.get(current.node) || 0) + current.node.weight(next)
+                if (!cameFrom.has(next) || newCost < (costSoFar.get(next) as number) ) {
+                    costSoFar.set(next, newCost);
+                    const priority = newCost + end.distance(next);
+                    frontier.push({node: next, priority})
+                    cameFrom.set(next, current.node)
                 }
             }
         }
-        return [];
+        return this.retracePath(start, end, cameFrom);
     }
 
-    private retracePath(start: Node, current: NavigationNode): Node[] {
-        let path: Node[] = [];
-        while (current.parent) {
-            path.unshift(current.node);
-            current = current.parent;
+    private retracePath(start: Node, end: Node, cameFrom: Map<Node, Node | null>): Node[] {
+        let current = end;
+        const path: Node[] = [];
+        while (current !== start) {
+            path.push(current);
+            current = cameFrom.get(current) as Node;
         }
-        path.unshift(start);
+        path.push(start)
+        path.reverse();
         return path;
     }
 

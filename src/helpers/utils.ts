@@ -4,7 +4,7 @@ import Vector2 = Phaser.Math.Vector2;
 export const range = (num: number): number[] => [...Array(num).keys()];
 
 /** Converts Vector2 to [x, y] */
-export function vector2ToArray(p: Vector2): [number, number] {
+export function vec2ToArray(p: Vector2): [number, number] {
     return [p.x, p.y];
 }
 

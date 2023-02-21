@@ -1,12 +1,12 @@
 import WormholeObject from "./WormholeObject";
-import {nullMatrix} from "../../helpers/utils";
+import {nullMatrix, vec2ToArray} from "../../helpers/utils";
 import Vector2 = Phaser.Math.Vector2;
 
 export const NOT_A_NEIGHBOUR = 1;
 
 export class Node {
     position: Vector2;
-    neighbours: Map<string, number>;
+    neighbours: Map<Node, number>;
 
     constructor(pos: Vector2) {
         this.position = pos;
@@ -17,12 +17,8 @@ export class Node {
         return this.position.equals(node.position);
     }
 
-    addNeighbour(node: Node, weight): void {
-        this.neighbours.set(node.repr, weight);
-    }
-
-    get repr(): string {
-        return `${this.position.x},${this.position.y}`
+    addNeighbour(node: Node, weight: number): void {
+        this.neighbours.set(node, weight);
     }
 
     distance(otherNode: Node): number {
@@ -30,7 +26,7 @@ export class Node {
     }
 
     weight(otherNode: Node): number {
-        return this.neighbours.get(otherNode.repr) ?? NOT_A_NEIGHBOUR;
+        return this.neighbours.get(otherNode) ?? NOT_A_NEIGHBOUR;
     }
 }
 
@@ -71,7 +67,7 @@ export default class GameMap {
             }
             const newNeighbour = this.sectorNodeMap[newPos.x][newPos.y];
             if (newNeighbour) {
-                node.addNeighbour(newNeighbour, 1);
+                node.addNeighbour(newNeighbour, direction.length());
             }
         }
         for (const wormhole of this.wormholes) {
@@ -117,7 +113,7 @@ export default class GameMap {
     nodeNeighbours(node: Node): Node[] {
         const neighbours: Node[] = [];
         for (const neighboursKey of node.neighbours.keys()) {
-            const [x, y] = neighboursKey.split(",").map((e) => Number.parseInt(e, 10));
+            const [x, y] = vec2ToArray(neighboursKey.position);
             neighbours.push(this.sectorNodeMap[x][y] as Node);
         }
         return neighbours;

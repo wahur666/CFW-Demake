@@ -37,9 +37,8 @@ export default class PathfindingTestScene extends Phaser.Scene {
             this.graphics.lineBetween(c(gate.node1.position.x), c(gate.node1.position.y), c(gate.node2.position.x), c(gate.node2.position.y));
         }
         const navi = new Navigation(map);
-        const path = navi.findPath(map.getNode(1, 1), map.getNode(13, 23))
+        const path = navi.findPath(map.getNode(1, 1), map.getNode(13, 23));
 
-        console.log(path);
         this.graphics.lineStyle(3, 0xff0000, 3);
         for (let i = 0; i < path.length - 1; i++) {
             this.graphics.lineBetween(c(path[i].position.x), c(path[i].position.y), c(path[i+1].position.x), c(path[i+1].position.y));
