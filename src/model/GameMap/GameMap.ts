@@ -40,15 +40,12 @@ export default class GameMap {
     constructor(size: number) {
         this.size = size;
         this.sectorNodeMap = nullMatrix(this.size);
-        this.createSector(0, 0, 5);
-        this.createSector(10, 0, 5);
-        this.createSector(20, 0, 5);
-        this.createSector(0, 10, 5);
-        this.createSector(10, 10, 5);
-        this.createSector(20, 10, 5);
-        this.createSector(0, 20, 5);
-        this.createSector(10, 20, 5);
-        this.createSector(20, 20, 5);
+        this.createSector(0, 0, 10);
+        this.createSector(20, 5, 10);
+        this.createSector(35, 9, 10);
+        this.createSector(8, 20, 10);
+        this.createSector(25, 29, 10);
+        this.createSector(44, 30, 10);
         this.generateWormholes();
         this.generateNeighbours();
     }
@@ -99,15 +96,14 @@ export default class GameMap {
     getNode = (x: number, y: number): Node => this.sectorNodeMap[x][y] as Node;
 
     private generateWormholes() {
-        this.wormholes.push(new WormholeObject(this.getNode(4, 4), this.getNode(10, 10), 5));
-        this.wormholes.push(new WormholeObject(this.getNode(12, 4), this.getNode(12, 10), 5));
-        this.wormholes.push(new WormholeObject(this.getNode(20, 4), this.getNode(14, 10), 5));
-        this.wormholes.push(new WormholeObject(this.getNode(4, 12), this.getNode(10, 12), 5));
-        this.wormholes.push(new WormholeObject(this.getNode(14, 12), this.getNode(20, 12), 5));
-        this.wormholes.push(new WormholeObject(this.getNode(4, 20), this.getNode(10, 14), 5));
-        this.wormholes.push(new WormholeObject(this.getNode(12, 20), this.getNode(12, 14), 5));
-        this.wormholes.push(new WormholeObject(this.getNode(12, 20), this.getNode(12, 14), 5));
-        this.wormholes.push(new WormholeObject(this.getNode(20, 20), this.getNode(14, 14), 5));
+        this.wormholes.push(new WormholeObject(this.getNode(8, 6), this.getNode(22, 10), 1));
+        this.wormholes.push(new WormholeObject(this.getNode(26, 9), this.getNode(37, 14), 1));
+        this.wormholes.push(new WormholeObject(this.getNode(25, 13), this.getNode(10, 25), 1));
+        this.wormholes.push(new WormholeObject(this.getNode(40, 18), this.getNode(30, 30), 1));
+        this.wormholes.push(new WormholeObject(this.getNode(16, 28), this.getNode(27, 31), 1));
+        this.wormholes.push(new WormholeObject(this.getNode(32, 37), this.getNode(46, 32), 1));
+        // this.wormholes.push(new WormholeObject(this.getNode(12, 20), this.getNode(12, 14), 1));
+        // this.wormholes.push(new WormholeObject(this.getNode(20, 20), this.getNode(14, 14), 1));
     }
 
     nodeNeighbours(node: Node): Node[] {
