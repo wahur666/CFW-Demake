@@ -1,0 +1,12 @@
+root = true
+
+[*]
+trim_trailing_whitespace = true
+charset = utf-8
+
+[*.{js,ts,jsx,tsx}]
+indent_size = 4
+indent_style = space
+
+[*.json]
+indent_size = 2
