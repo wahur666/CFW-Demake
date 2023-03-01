@@ -6,6 +6,13 @@ import checker from "vite-plugin-checker";
 export default defineConfig({
   plugins: [preact(), checker({ typescript: true })],
   build: {
-    assetsInlineLimit: 0
-  }
+    assetsInlineLimit: 0,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          phaser: ['phaser']
+        }
+      }
+    }
+  },
 })
