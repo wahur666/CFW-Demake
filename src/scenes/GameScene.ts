@@ -7,6 +7,9 @@ import { route } from "preact-router";
 import Building from "../entity/Building";
 import { Images } from "./PreloadScene";
 import Planet from "../entity/Planet";
+import Pointer = Phaser.Input.Pointer;
+import Vector2 = Phaser.Math.Vector2;
+import GameMap from "../model/GameMap/GameMap";
 
 export default class GameScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
@@ -19,6 +22,9 @@ export default class GameScene extends Phaser.Scene {
     private planet: Planet;
     private controls: Phaser.Cameras.Controls.FixedKeyControl;
 
+    private target: Vector2 | null = null;
+    private map: GameMap;
+
     constructor() {
         super(SceneRegistry.GAME);
         // @ts-ignore
@@ -27,19 +33,33 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
-
-        // this.input.mouse.disableContextMenu();
-        const rect1 = this.add.rectangle(10, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
-        const rect2 = this.add.rectangle(500, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
-        this.wh1 = new Wormhole(this, 260, 120);
-        this.wh2 = new Wormhole(this, 560, 120);
-        this.unit1 = new Unit(this, 50, 50);
+        const size = 64;
+        const c = (a:number) => a * 20;
         this.graphics = this.add.graphics();
+
+        this.map = new GameMap(size);
+        this.graphics.lineStyle(2, 0x00ff00);
+        for (let i = 0; i < size; i++) {
+            for (let j = 0; j < size; j++) {
+                if (this.map.sectorNodeMap[i][j]) {
+                    this.graphics.strokeRect(c(i), c(j), 20, 20);
+                }
+            }
+        }
+        // this.input.mouse.disableContextMenu();
+        // const rect1 = this.add.rectangle(10, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
+        // const rect2 = this.add.rectangle(500, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
+        // this.wh1 = new Wormhole(this, 260, 120);
+        // this.wh2 = new Wormhole(this, 560, 120);
+        this.unit1 = new Unit(this, 50, 50);
         this.input.keyboard.on("keyup-ESC", (ev) => {
             route("/", true);
         });
-        this.input.on("pointerdown", (ev) => {
-            console.log("mouseee", ev);
+        this.input.on("pointerdown", (ev: Pointer) => {
+            console.log("mouseee", ev.button);
+            if (ev.button === 2) {
+                this.target = new Vector2(ev.x, ev.y);
+            }
         });
 
         // const cursors = this.input.keyboard.createCursorKeys();
@@ -132,7 +152,7 @@ export default class GameScene extends Phaser.Scene {
         });
 
         this.planet = new Planet(this, 500, 500, Images.PLANET);
-        this.building = new Building(this, 500, 500, Images.HOUSE_ICON);
+        // this.building = new Building(this, 500, 500, Images.HOUSE_ICON);
     }
 
     update(time: number, delta: number) {
@@ -163,12 +183,15 @@ export default class GameScene extends Phaser.Scene {
         // } else {
         //     this.graphics.clear();
         //     const target = {x: 600, y: 50};
-        //     if (this.unit1.pos.distance(target) <= 5) {
-        //         this.unit1.body.stop();
-        //     } else {
-        //         this.unit1.setRotation(Math.atan2(-this.unit1.y + target.y, -this.unit1.x + target.x) + Math.PI / 2);
-        //         this.physics.moveTo(this.unit1, target.x, target.y, 30);
-        //     }
+        if (this.target) {
+            if (this.unit1.pos.distance(this.target) <= 5) {
+                this.unit1.body.stop();
+                this.target = null;
+            } else {
+                this.unit1.setRotation(Math.atan2(-this.unit1.y + this.target.y, -this.unit1.x + this.target.x) + Math.PI / 2);
+                this.physics.moveTo(this.unit1, this.target.x, this.target.y, 50);
+            }
+        }
         // }
     }
 }
