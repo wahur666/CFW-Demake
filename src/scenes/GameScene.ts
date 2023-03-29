@@ -10,6 +10,8 @@ import Planet from "../entity/Planet";
 import Pointer = Phaser.Input.Pointer;
 import Vector2 = Phaser.Math.Vector2;
 import GameMap from "../model/GameMap/GameMap";
+import {inRect} from "../helpers/utils";
+import cursor from "../assets/cursor.png";
 
 export default class GameScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
@@ -18,12 +20,15 @@ export default class GameScene extends Phaser.Scene {
     private unit1: Unit;
     private inSector1 = true;
     private graphics: Phaser.GameObjects.Graphics;
+    private graphics2: Phaser.GameObjects.Graphics;
     private building: Building | null = null;
     private planet: Planet;
     private controls: Phaser.Cameras.Controls.FixedKeyControl;
 
     private target: Vector2 | null = null;
     private map: GameMap;
+    private dragging = false;
+    private dragStart: Vector2 | null = null;
 
     constructor() {
         super(SceneRegistry.GAME);
@@ -34,11 +39,15 @@ export default class GameScene extends Phaser.Scene {
 
     create() {
         const size = 64;
+        this.input.setDefaultCursor(`url(${cursor}), default`);
+
         const c = (a:number) => a * 20;
         this.graphics = this.add.graphics();
+        this.graphics2 = this.add.graphics();
+
 
         this.map = new GameMap(size);
-        this.graphics.lineStyle(2, 0x00ff00);
+        this.graphics.lineStyle(2, 0x0000ff);
         for (let i = 0; i < size; i++) {
             for (let j = 0; j < size; j++) {
                 if (this.map.sectorNodeMap[i][j]) {
@@ -55,12 +64,26 @@ export default class GameScene extends Phaser.Scene {
         this.input.keyboard.on("keyup-ESC", (ev) => {
             route("/", true);
         });
+
         this.input.on("pointerdown", (ev: Pointer) => {
-            console.log("mouseee", ev.button);
-            if (ev.button === 2) {
+            console.log(ev.button);
+            if (ev.button === 0) {
+                this.dragging = true;
+                this.dragStart = ev.position.clone();
+            } else if (ev.button === 2) {
                 this.target = new Vector2(ev.x, ev.y);
             }
         });
+        this.input.on("pointerup", (ev: Pointer) => {
+            if (ev.button === 0) {
+                if (this.dragStart) {
+                    this.unit1.selected = inRect(this.unit1.pos, ev.position, this.dragStart);
+                }
+                this.dragging = false;
+                this.dragStart = null;
+                this.graphics2.clear();
+            }
+        })
 
         // const cursors = this.input.keyboard.createCursorKeys();
 
@@ -130,7 +153,7 @@ export default class GameScene extends Phaser.Scene {
             }
         });
 
-        this.input.on("pointermove", (ev) => {
+        this.input.on("pointermove", (ev: Pointer) => {
             if (this.building) {
                 const distance = Phaser.Math.Distance.Between(
                     ev.x,
@@ -149,15 +172,19 @@ export default class GameScene extends Phaser.Scene {
                     this.building.setPosition(ev.x, ev.y);
                 }
             }
+            if (this.dragging) {
+                this.drawSelectionRect(ev);
+            }
         });
 
-        this.planet = new Planet(this, 500, 500, Images.PLANET);
+        // this.planet = new Planet(this, 500, 500, Images.PLANET);
         // this.building = new Building(this, 500, 500, Images.HOUSE_ICON);
     }
 
     update(time: number, delta: number) {
         this.building?.update(delta);
         this.planet?.update(delta);
+        this.unit1.update(delta);
         // this.controls.update(delta);
         // if (this.unit1.travelling) {
         //     this.graphics.clear();
@@ -188,10 +215,26 @@ export default class GameScene extends Phaser.Scene {
                 this.unit1.body.stop();
                 this.target = null;
             } else {
-                this.unit1.setRotation(Math.atan2(-this.unit1.y + this.target.y, -this.unit1.x + this.target.x) + Math.PI / 2);
-                this.physics.moveTo(this.unit1, this.target.x, this.target.y, 50);
+                if (this.unit1.selected) {
+                    this.unit1.setRotation(Math.atan2(-this.unit1.y + this.target.y, -this.unit1.x + this.target.x) + Math.PI / 2);
+                    this.physics.moveTo(this.unit1, this.target.x, this.target.y, 50);
+                }
             }
         }
         // }
+    }
+
+    drawSelectionRect(ev: Pointer) {
+        const p1 = ev.position;
+        const p2 = this.dragStart!;
+        const x = Math.min(p1.x, p2.x);
+        const y = Math.min(p1.y, p2.y);
+        const w = Math.abs(p1.x - p2.x);
+        const h = Math.abs(p1.y - p2.y);
+        this.graphics2.clear();
+        this.graphics2.lineStyle(2, 0x00ff00);
+        this.graphics2.fillStyle(0x00ff00, 0.2)
+        this.graphics2.strokeRect(x, y, w, h);
+        this.graphics2.fillRect(x, y, w, h);
     }
 }

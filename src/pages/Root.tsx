@@ -9,6 +9,7 @@ export default function Root({ path: string }) {
     const gotoLobby = (event) => route(PageRoutes.LOBBY, true);
     const goToEditor = (event) => route(PageRoutes.EDITOR, true);
     const gotoPathfinding = (event) => route(PageRoutes.PATHFINDING_TEST, true);
+    const gotoPathfinding2 = (event) => route(PageRoutes.PATHFINDING2_TEST, true);
 
     return (
         <div className="grid place-content-center h-100 scale-2">
@@ -40,7 +41,9 @@ export default function Root({ path: string }) {
                     <Button animator={{ animate: true }} className="w-40" onClick={gotoPathfinding}>
                         <Text>Pathfinding</Text>
                     </Button>
-
+                    <Button animator={{ animate: true }} className="w-40" onClick={gotoPathfinding2}>
+                        <Text>Pathfinding2</Text>
+                    </Button>
                 </div>
             </ArwesThemeProvider>
         </div>

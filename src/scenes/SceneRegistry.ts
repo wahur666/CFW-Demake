@@ -3,4 +3,5 @@ export enum SceneRegistry {
     GAME = "GameScene",
     EDITOR = "EditorScene",
     PATHFINDIG_TEST = "PathfindingScene",
+    PATHFINDIG2_TEST = "PathfindingScene2",
 }

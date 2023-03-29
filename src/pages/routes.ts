@@ -6,4 +6,5 @@ export enum PageRoutes {
     LOBBY = "/lobby",
     EDITOR = "/editor",
     PATHFINDING_TEST = "/pathfinding",
+    PATHFINDING2_TEST = "/pathfinding2",
 }

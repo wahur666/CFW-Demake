@@ -11,6 +11,7 @@ import {PageRoutes} from "./pages/routes";
 
 import "./style.scss";
 import PathFindingTest from "./pages/PathFindingTest";
+import PathFindingTest2 from "./pages/PathFindingTest2";
 render(
     <Router>
         <Root path={PageRoutes.ROOT} />
@@ -18,6 +19,7 @@ render(
         <Game path={PageRoutes.GAME} />
         <Lobby path={PageRoutes.LOBBY} />
         <PathFindingTest path={PageRoutes.PATHFINDING_TEST} />
+        <PathFindingTest2 path={PageRoutes.PATHFINDING2_TEST} />
     </Router>,
     document.getElementById("app") as HTMLElement
 );

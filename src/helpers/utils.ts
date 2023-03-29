@@ -8,6 +8,14 @@ export function vec2ToArray(p: Vector2): [number, number] {
     return [p.x, p.y];
 }
 
+export const inRect = (p: Vector2, p1: Vector2, p2: Vector2): boolean => {
+    const x = Math.min(p1.x, p2.x);
+    const y = Math.min(p1.y, p2.y);
+    const w = Math.abs(p1.x - p2.x);
+    const h = Math.abs(p1.y - p2.y);
+    return x <= p.x && p.x <= x + w && y <= p.y && p.y <= y + h;
+}
+
 export const defaultFont = '"Titillium Web", sans-serif';
 
 export const formatTime = (s: number) => (s - (s %= 60)) / 60 + (9 < s ? ":" : ":0") + s;
