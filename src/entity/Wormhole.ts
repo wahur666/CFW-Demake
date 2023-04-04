@@ -7,7 +7,7 @@ export default class Wormhole extends Phaser.GameObjects.Sprite {
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, Images.WORMHOLE);
         this.scene.add.existing(this);
-        this.setScale(0.5);
+        this.setScale(0.2);
     }
 
     get pos(): Vector2 {

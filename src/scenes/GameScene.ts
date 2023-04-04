@@ -1,22 +1,21 @@
 import Phaser from "phaser";
-import { SceneRegistry } from "./SceneRegistry";
-import { SHARED_CONFIG } from "../model/config";
+import {SceneRegistry} from "./SceneRegistry";
+import {SHARED_CONFIG} from "../model/config";
 import Wormhole from "../entity/Wormhole";
 import Unit from "../entity/Unit";
-import { route } from "preact-router";
+import {route} from "preact-router";
 import Building from "../entity/Building";
-import { Images } from "./PreloadScene";
+import {Images} from "./PreloadScene";
 import Planet from "../entity/Planet";
 import Pointer = Phaser.Input.Pointer;
 import Vector2 = Phaser.Math.Vector2;
 import GameMap from "../model/GameMap/GameMap";
 import {inRect} from "../helpers/utils";
 import cursor from "../assets/cursor.png";
+import {Navigation} from "../model/Navigation";
 
 export default class GameScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
-    private wh1: Wormhole;
-    private wh2: Wormhole;
     private unit1: Unit;
     private inSector1 = true;
     private graphics: Phaser.GameObjects.Graphics;
@@ -24,11 +23,13 @@ export default class GameScene extends Phaser.Scene {
     private building: Building | null = null;
     private planet: Planet;
     private controls: Phaser.Cameras.Controls.FixedKeyControl;
+    private wormholes: Wormhole[] = [];
 
     private target: Vector2 | null = null;
     private map: GameMap;
     private dragging = false;
     private dragStart: Vector2 | null = null;
+    private navi: Navigation;
 
     constructor() {
         super(SceneRegistry.GAME);
@@ -40,21 +41,32 @@ export default class GameScene extends Phaser.Scene {
     create() {
         const size = 64;
         this.input.setDefaultCursor(`url(${cursor}), default`);
-
-        const c = (a:number) => a * 20;
+        const width = 20;
+        const c = (a: number) => a * width;
         this.graphics = this.add.graphics();
         this.graphics2 = this.add.graphics();
 
 
         this.map = new GameMap(size);
+        const navi = new Navigation(this.map);
         this.graphics.lineStyle(2, 0x0000ff);
         for (let i = 0; i < size; i++) {
             for (let j = 0; j < size; j++) {
                 if (this.map.sectorNodeMap[i][j]) {
-                    this.graphics.strokeRect(c(i), c(j), 20, 20);
+                    this.graphics.strokeRect(c(i), c(j), width, width);
                 }
             }
         }
+        for (const wormhole of this.map.wormholes) {
+            const x1 = c(wormhole.node1.position.x) + 10;
+            const y1 = c(wormhole.node1.position.y) + 10;
+            this.wormholes.push(new Wormhole(this, x1, y1));
+            const x2 = c(wormhole.node2.position.x) + 10;
+            const y2 = c(wormhole.node2.position.y) + 10;
+            this.wormholes.push(new Wormhole(this, x2, y2));
+        }
+
+
         // this.input.mouse.disableContextMenu();
         // const rect1 = this.add.rectangle(10, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
         // const rect2 = this.add.rectangle(500, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
@@ -71,7 +83,17 @@ export default class GameScene extends Phaser.Scene {
                 this.dragging = true;
                 this.dragStart = ev.position.clone();
             } else if (ev.button === 2) {
-                this.target = new Vector2(ev.x, ev.y);
+                const [x, y] = this.calcSquare(ev.x, ev.y);
+                if (this.unit1.selected) {
+                    const [x1, y1] = this.calcSquare(this.unit1.x, this.unit1.y);
+                    const path = navi.findPath(this.map.getNode(x1, y1), this.map.getNode(x, y))
+                        .map(e => e.position.clone().multiply({
+                            x: 20,
+                            y: 20
+                        }).add({x: 10, y: 10}));
+                    // console.log(path)
+                    this.unit1.setNav(path)
+                }
             }
         });
         this.input.on("pointerup", (ev: Pointer) => {
@@ -181,10 +203,19 @@ export default class GameScene extends Phaser.Scene {
         // this.building = new Building(this, 500, 500, Images.HOUSE_ICON);
     }
 
+    calcSquare(x: number, y: number): [number, number] {
+        return [Math.floor(x / 20), Math.floor(y / 20)]
+    }
+
     update(time: number, delta: number) {
         this.building?.update(delta);
         this.planet?.update(delta);
         this.unit1.update(delta);
+
+        const [x, y] = this.calcSquare(this.unit1.x, this.unit1.y);
+        // this.graphics2.clear();
+        // this.graphics2.fillStyle(0x00ff00, 1);
+        // this.graphics2.fillRect(x * 20, y * 20, 20, 20);
         // this.controls.update(delta);
         // if (this.unit1.travelling) {
         //     this.graphics.clear();
