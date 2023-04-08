@@ -1,3 +1,5 @@
+import SECTOR_SIZE = MAP_GEN_ENUM.SECTOR_SIZE;
+
 export {}
 
 export const GT_PATH = 32;
@@ -95,7 +97,7 @@ export class TerrainTheme {
 
     moonTypes: string[][] = Array(MAX_TYPES).fill(Array(GT_PATH).fill(""))
 
-    sizeOk: MAP_GEN_ENUM.SECTOR_SIZE = 0;
+    sizeOk: MAP_GEN_ENUM.SECTOR_SIZE = SECTOR_SIZE.ALL_SIZE;
     minSize: number = 0;
     maxSize: number = 0;
     sizeFunc: MAP_GEN_ENUM.DMAP_FUNC = MAP_GEN_ENUM.DMAP_FUNC.LINEAR;

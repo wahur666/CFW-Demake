@@ -2,24 +2,23 @@ import Phaser from "phaser";
 import {SceneRegistry} from "./SceneRegistry";
 import {SHARED_CONFIG} from "../model/config";
 import Wormhole from "../entity/Wormhole";
-import Unit from "../entity/Unit";
+import Unit, {TravelState} from "../entity/Unit";
 import {route} from "preact-router";
 import Building from "../entity/Building";
-import {Images} from "./PreloadScene";
 import Planet from "../entity/Planet";
-import Pointer = Phaser.Input.Pointer;
-import Vector2 = Phaser.Math.Vector2;
 import GameMap from "../model/GameMap/GameMap";
-import {inRect} from "../helpers/utils";
+import {calculateRect, drawWidth, getRandomInt, inRect, toVec2} from "../helpers/utils";
 import cursor from "../assets/cursor.png";
 import {Navigation} from "../model/Navigation";
+import Pointer = Phaser.Input.Pointer;
+import Vector2 = Phaser.Math.Vector2;
 
 export default class GameScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
-    private unit1: Unit;
-    private inSector1 = true;
+    private units: Unit[] = [];
+    private selectedUnits: Unit[] = [];
     private graphics: Phaser.GameObjects.Graphics;
-    private graphics2: Phaser.GameObjects.Graphics;
+    private selectionRectGraphics: Phaser.GameObjects.Graphics;
     private building: Building | null = null;
     private planet: Planet;
     private controls: Phaser.Cameras.Controls.FixedKeyControl;
@@ -41,11 +40,8 @@ export default class GameScene extends Phaser.Scene {
     create() {
         const size = 64;
         this.input.setDefaultCursor(`url(${cursor}), default`);
-        const width = 20;
-        const c = (a: number) => a * width;
         this.graphics = this.add.graphics();
-        this.graphics2 = this.add.graphics();
-
+        this.selectionRectGraphics = this.add.graphics();
 
         this.map = new GameMap(size);
         const navi = new Navigation(this.map);
@@ -53,16 +49,16 @@ export default class GameScene extends Phaser.Scene {
         for (let i = 0; i < size; i++) {
             for (let j = 0; j < size; j++) {
                 if (this.map.sectorNodeMap[i][j]) {
-                    this.graphics.strokeRect(c(i), c(j), width, width);
+                    this.graphics.strokeRect(calculateRect(i), calculateRect(j), drawWidth, drawWidth);
                 }
             }
         }
         for (const wormhole of this.map.wormholes) {
-            const x1 = c(wormhole.node1.position.x) + 10;
-            const y1 = c(wormhole.node1.position.y) + 10;
+            const x1 = calculateRect(wormhole.node1.position.x) + drawWidth / 2;
+            const y1 = calculateRect(wormhole.node1.position.y) + drawWidth / 2;
             this.wormholes.push(new Wormhole(this, x1, y1));
-            const x2 = c(wormhole.node2.position.x) + 10;
-            const y2 = c(wormhole.node2.position.y) + 10;
+            const x2 = calculateRect(wormhole.node2.position.x) + drawWidth / 2;
+            const y2 = calculateRect(wormhole.node2.position.y) + drawWidth / 2;
             this.wormholes.push(new Wormhole(this, x2, y2));
         }
 
@@ -72,7 +68,8 @@ export default class GameScene extends Phaser.Scene {
         // const rect2 = this.add.rectangle(500, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
         // this.wh1 = new Wormhole(this, 260, 120);
         // this.wh2 = new Wormhole(this, 560, 120);
-        this.unit1 = new Unit(this, 50, 50);
+        this.units.push(new Unit(this, 50, 50, this.map));
+        this.units.push(new Unit(this, 90, 30, this.map));
         this.input.keyboard.on("keyup-ESC", (ev) => {
             route("/", true);
         });
@@ -84,26 +81,43 @@ export default class GameScene extends Phaser.Scene {
                 this.dragStart = ev.position.clone();
             } else if (ev.button === 2) {
                 const [x, y] = this.calcSquare(ev.x, ev.y);
-                if (this.unit1.selected) {
-                    const [x1, y1] = this.calcSquare(this.unit1.x, this.unit1.y);
-                    const path = navi.findPath(this.map.getNode(x1, y1), this.map.getNode(x, y))
-                        .map(e => e.position.clone().multiply({
-                            x: 20,
-                            y: 20
-                        }).add({x: 10, y: 10}));
-                    // console.log(path)
-                    this.unit1.setNav(path)
+                for (const selectedUnit of this.selectedUnits) {
+                    if (selectedUnit.traveling === TravelState.NOT_TRAVELING) {
+                        const [x1, y1] = this.calcSquare(selectedUnit.x, selectedUnit.y);
+                        let endNode = this.map.getNode(x, y);
+                        if (endNode.hasWormhole) {
+                            const directions: [number, number][] = [
+                                [-1, -1], [-1, 0], [-1, 1],
+                                [0, -1], [0, 1],
+                                [1, -1], [1, 0], [1, 1]
+                            ]
+                            const wormhole = this.map.wormholes.find(wh => wh.isConnected(endNode));
+                            if (wormhole) {
+                                const node = wormhole.getOtherNode(endNode);
+                                const newEndNodePos = node.position.clone().add(toVec2(directions[getRandomInt(8)]) );
+                                endNode = this.map.getNode(newEndNodePos.x, newEndNodePos.y);
+                            }
+                        }
+                        const path = navi.findPath(this.map.getNode(x1, y1), endNode);
+                        selectedUnit.setNav(path)
+                    }
                 }
             }
         });
         this.input.on("pointerup", (ev: Pointer) => {
             if (ev.button === 0) {
                 if (this.dragStart) {
-                    this.unit1.selected = inRect(this.unit1.pos, ev.position, this.dragStart);
+                    this.selectedUnits = [];
+                    for (const unit of this.units) {
+                        unit.setSelected(inRect(unit.pos, ev.position, this.dragStart));
+                        if (unit.isSelected) {
+                            this.selectedUnits.push(unit);
+                        }
+                    }
                 }
                 this.dragging = false;
                 this.dragStart = null;
-                this.graphics2.clear();
+                this.selectionRectGraphics.clear();
             }
         })
 
@@ -204,55 +218,13 @@ export default class GameScene extends Phaser.Scene {
     }
 
     calcSquare(x: number, y: number): [number, number] {
-        return [Math.floor(x / 20), Math.floor(y / 20)]
+        return [Math.floor(x / drawWidth), Math.floor(y / drawWidth)]
     }
 
     update(time: number, delta: number) {
         this.building?.update(delta);
         this.planet?.update(delta);
-        this.unit1.update(delta);
-
-        const [x, y] = this.calcSquare(this.unit1.x, this.unit1.y);
-        // this.graphics2.clear();
-        // this.graphics2.fillStyle(0x00ff00, 1);
-        // this.graphics2.fillRect(x * 20, y * 20, 20, 20);
-        // this.controls.update(delta);
-        // if (this.unit1.travelling) {
-        //     this.graphics.clear();
-        //     this.graphics.lineStyle(1, 0x00FF00);
-        //     this.graphics.lineBetween(this.wh1.x, this.wh1.y, this.wh2.x, this.wh2.y);
-        //     return;
-        // }
-        // if (this.inSector1) {
-        //     if (this.unit1.pos.distance(this.wh1.pos) <= 5) {
-        //         this.unit1.setPosition(this.wh2.x, this.wh2.y);
-        //         this.inSector1 = false;
-        //         this.unit1.visible = false;
-        //         this.unit1.body.stop();
-        //         this.unit1.travelling = true;
-        //         setTimeout(() => {
-        //             this.unit1.visible = true;
-        //             this.unit1.travelling = false;
-        //         }, 1000);
-        //     } else {
-        //         this.unit1.setRotation(Math.atan2(-this.unit1.y + this.wh1.y, -this.unit1.x + this.wh1.x) + Math.PI / 2);
-        //         this.physics.moveTo(this.unit1, this.wh1.x, this.wh1.y, 50);
-        //     }
-        // } else {
-        //     this.graphics.clear();
-        //     const target = {x: 600, y: 50};
-        if (this.target) {
-            if (this.unit1.pos.distance(this.target) <= 5) {
-                this.unit1.body.stop();
-                this.target = null;
-            } else {
-                if (this.unit1.selected) {
-                    this.unit1.setRotation(Math.atan2(-this.unit1.y + this.target.y, -this.unit1.x + this.target.x) + Math.PI / 2);
-                    this.physics.moveTo(this.unit1, this.target.x, this.target.y, 50);
-                }
-            }
-        }
-        // }
+        this.units.forEach(unit => unit.update(delta));
     }
 
     drawSelectionRect(ev: Pointer) {
@@ -262,10 +234,10 @@ export default class GameScene extends Phaser.Scene {
         const y = Math.min(p1.y, p2.y);
         const w = Math.abs(p1.x - p2.x);
         const h = Math.abs(p1.y - p2.y);
-        this.graphics2.clear();
-        this.graphics2.lineStyle(2, 0x00ff00);
-        this.graphics2.fillStyle(0x00ff00, 0.2)
-        this.graphics2.strokeRect(x, y, w, h);
-        this.graphics2.fillRect(x, y, w, h);
+        this.selectionRectGraphics.clear();
+        this.selectionRectGraphics.lineStyle(2, 0x00ff00);
+        this.selectionRectGraphics.fillStyle(0x00ff00, 0.2)
+        this.selectionRectGraphics.strokeRect(x, y, w, h);
+        this.selectionRectGraphics.fillRect(x, y, w, h);
     }
 }

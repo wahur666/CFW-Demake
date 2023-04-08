@@ -1,12 +1,20 @@
+import { GameNode } from "../model/GameMap/GameMap";
 import Vector2 = Phaser.Math.Vector2;
 
 /** Return (0..num-1) values */
 export const range = (num: number): number[] => [...Array(num).keys()];
 
 /** Converts Vector2 to [x, y] */
-export function vec2ToArray(p: Vector2): [number, number] {
-    return [p.x, p.y];
-}
+export const vec2ToArray = (p: Vector2): [number, number] => [p.x, p.y]
+
+export const drawWidth = 20;
+export const halfWidth = drawWidth / 2;
+export const calculateRect = (width: number) => width * 20;
+export const nodeToPos = (node: GameNode) => node.position.clone().multiply({ x: drawWidth, y: drawWidth }).add({ x: halfWidth, y: halfWidth });
+export const posToNodeCoords = (pos: Vector2) => [Math.floor(pos.x / drawWidth), Math.floor(pos.y / drawWidth)];
+export const getRandomInt = (max: number): number => Math.floor(Math.random() * max);
+export const toVec2 = (arr: number[]): Vector2 => new Vector2(arr[0], arr[1]);
+
 
 export const inRect = (p: Vector2, p1: Vector2, p2: Vector2): boolean => {
     const x = Math.min(p1.x, p2.x);
@@ -23,25 +31,17 @@ export const formatTime = (s: number) => (s - (s %= 60)) / 60 + (9 < s ? ":" : "
 export const d2r = Phaser.Math.DegToRad;
 
 export const zeroMatrix = (width: number, height = width): number[][] => {
-    const mat: number[][] = [];
+    const mat: number[][] = Array(width);
     for (let i = 0; i < width; i++) {
-        const s: number[] = [];
-        for (let j = 0; j < height; j++) {
-            s.push(0);
-        }
-        mat.push(s);
+        mat[i] = Array(height).fill(0);
     }
     return mat;
 }
 
 export const nullMatrix = <T>(width: number, height = width): (T | null)[][] => {
-    const mat: (T | null)[][] = [];
+    const mat: (T | null)[][] = Array(width);
     for (let i = 0; i < width; i++) {
-        const s: (T | null)[] = [];
-        for (let j = 0; j < height; j++) {
-            s.push(null);
-        }
-        mat.push(s);
+        mat[i] = Array(height).fill(null);
     }
     return mat;
 }

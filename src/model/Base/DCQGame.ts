@@ -2,6 +2,14 @@ import _CQGAME = CQGAMETYPES._CQGAME;
 import OPTIONS = CQGAMETYPES.OPTIONS;
 import {applyMixins} from "../TsBlackMagic/mixins";
 import RANDOM_TEMPLATE = CQGAMETYPES.RANDOM_TEMPLATE;
+import GAMETYPE = CQGAMETYPES.GAMETYPE;
+import MONEY = CQGAMETYPES.MONEY;
+import MAPTYPE = CQGAMETYPES.MAPTYPE;
+import MAPSIZE = CQGAMETYPES.MAPSIZE;
+import TERRAIN = CQGAMETYPES.TERRAIN;
+import STARTING_UNITS = CQGAMETYPES.STARTING_UNITS;
+import VISIBILITYMODE = CQGAMETYPES.VISIBILITYMODE;
+import COMMANDLIMIT = CQGAMETYPES.COMMANDLIMIT;
 
 const MAX_PLAYERS = 8;
 
@@ -63,7 +71,7 @@ export namespace CQGAMETYPES {
     }
 
     export class SLOT {
-        type: TYPE = 3;
+        type: TYPE = TYPE.COMPUTER;
         compChalange: COMP_CHALANGE = 4;
         state: STATE = 3;
         race: RACE = 4;
@@ -150,7 +158,7 @@ export namespace CQGAMETYPES {
          * - HQ Plats
          * - Kill Plast + Fabs
          * */
-        gameType: GAMETYPE = 3;
+        gameType: GAMETYPE = GAMETYPE.KILL_HQ_PLATS;
         gameSpeed: number = 5;	// need enough bits for -16 to 15
 
         regenOn: number = 1;
@@ -165,43 +173,43 @@ export namespace CQGAMETYPES {
          * - Med
          * - High
          * */
-        money: MONEY = 2;
+        money: MONEY = MONEY.MEDIUM_MONEY;
 
-        mapType: MAPTYPE = 2;
+        mapType: MAPTYPE = MAPTYPE.RANDOM_MAP;
 
         /** Generation Template
          * - Pure Random
          * - Random
          * - Star
          * - Ring*/
-        templateType: RANDOM_TEMPLATE = 2;
+        templateType: RANDOM_TEMPLATE = RANDOM_TEMPLATE.TEMPLATE_NEW_RANDOM;
 
         /** Map Size
          * - Small
          * - Medium
          * - Large */
-        mapSize: MAPSIZE = 2;
+        mapSize: MAPSIZE = MAPSIZE.LARGE_MAP;
 
         /** Terrain Type
          * - Light
          * - Medium
          * - Heavy */
-        terrain: TERRAIN = 2;
+        terrain: TERRAIN = TERRAIN.LIGHT_TERRAIN;
 
         /** Starting units
          * - Minimal
          * - Standard
          * - Advanced
          *  */
-        units: STARTING_UNITS = 2;
+        units: STARTING_UNITS = STARTING_UNITS.UNITS_MEDIUM;
 
         /** Visibility
          * - Normal
          * - Explored
          * - All visible
          * */
-        visibility: VISIBILITYMODE = 2;
-        commandLimit: COMMANDLIMIT = 2;
+        visibility: VISIBILITYMODE = VISIBILITYMODE.VISIBILITY_NORMAL;
+        commandLimit: COMMANDLIMIT = COMMANDLIMIT.COMMAND_NORMAL;
     }
 
     export class _CQGAME {
@@ -229,20 +237,20 @@ export class CQGame {
                 slot.color = i + 1;
                 return slot;
             });
-        this.gameType = 3;
+        this.gameType = GAMETYPE.KILL_PLATS_FABS;
         this.gameSpeed = 5;
         this.regenOn = 1;
         this.spectatorsOn = 1;
         this.lockDiplomacyOn = 1;
         this.numSystems = 5;
-        this.money = 2;
-        this.mapType = 2;
-        this.templateType = 2;
-        this.mapSize = 2;
-        this.terrain = 2;
-        this.units = 2;
-        this.visibility = 2;
-        this.commandLimit = 2;
+        this.money = MONEY.MEDIUM_MONEY;
+        this.mapType = MAPTYPE.RANDOM_MAP;
+        this.templateType = RANDOM_TEMPLATE.TEMPLATE_RANDOM;
+        this.mapSize = MAPSIZE.MEDIUM_MAP;
+        this.terrain = TERRAIN.LIGHT_TERRAIN;
+        this.units = STARTING_UNITS.UNITS_MEDIUM;
+        this.visibility = VISIBILITYMODE.VISIBILITY_NORMAL;
+        this.commandLimit = COMMANDLIMIT.COMMAND_NORMAL;
     }
 }
 

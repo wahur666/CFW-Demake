@@ -1,10 +1,10 @@
 import Heap from "heap-js";
 import Vector2 = Phaser.Math.Vector2;
 import GameMap from "../GameMap/GameMap";
-import {Node} from "../GameMap/GameMap";
+import {GameNode} from "../GameMap/GameMap";
 
 interface PriorityNode {
-    node: Node,
+    node: GameNode,
     priority: number,
 }
 
@@ -12,15 +12,15 @@ export class Navigation {
 
     constructor(private map: GameMap) {}
 
-    public findPath(start: Node, end: Node): Node[] {
+    public findPath(start: GameNode, end: GameNode): GameNode[] {
         if (!this.map.sectorNodeMap[start.position.x][start.position.y] ||
             !this.map.sectorNodeMap[end.position.x][end.position.y] )  {
             return [];
         }
         const frontier: Heap<PriorityNode> = new Heap<PriorityNode>((a, b) => a.priority - b.priority);
         frontier.push({node: start, priority: 0});
-        const cameFrom = new Map<Node, Node | null>;
-        const costSoFar = new Map<Node, number>;
+        const cameFrom = new Map<GameNode, GameNode | null>;
+        const costSoFar = new Map<GameNode, number>;
         cameFrom.set(start, null);
         costSoFar.set(start, 0);
 
@@ -44,12 +44,12 @@ export class Navigation {
         return this.retracePath(start, end, cameFrom);
     }
 
-    private retracePath(start: Node, end: Node, cameFrom: Map<Node, Node | null>): Node[] {
+    private retracePath(start: GameNode, end: GameNode, cameFrom: Map<GameNode, GameNode | null>): GameNode[] {
         let current = end;
-        const path: Node[] = [];
+        const path: GameNode[] = [];
         while (current !== start) {
             path.push(current);
-            current = cameFrom.get(current) as Node;
+            current = cameFrom.get(current) as GameNode;
         }
         path.push(start)
         path.reverse();
