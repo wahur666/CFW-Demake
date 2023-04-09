@@ -37,6 +37,10 @@ export default class GameScene extends Phaser.Scene {
         this.config = SHARED_CONFIG;
     }
 
+    getWorldPos(pointer: Pointer): Vector2 {
+        return this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+    }
+
     create() {
         const size = 64;
         this.input.setDefaultCursor(`url(${cursor}), default`);
@@ -78,9 +82,10 @@ export default class GameScene extends Phaser.Scene {
             console.log(ev.button);
             if (ev.button === 0) {
                 this.dragging = true;
-                this.dragStart = ev.position.clone();
+                this.dragStart = this.getWorldPos(ev);
             } else if (ev.button === 2) {
-                const [x, y] = this.calcSquare(ev.x, ev.y);
+                const worldPoint = this.getWorldPos(ev);
+                const [x, y] = this.calcSquare(worldPoint.x, worldPoint.y);
                 for (const selectedUnit of this.selectedUnits) {
                     if (selectedUnit.traveling === TravelState.NOT_TRAVELING) {
                         const [x1, y1] = this.calcSquare(selectedUnit.x, selectedUnit.y);
@@ -109,7 +114,7 @@ export default class GameScene extends Phaser.Scene {
                 if (this.dragStart) {
                     this.selectedUnits = [];
                     for (const unit of this.units) {
-                        unit.setSelected(inRect(unit.pos, ev.position, this.dragStart));
+                        unit.setSelected(inRect(unit.pos, this.getWorldPos(ev), this.dragStart));
                         if (unit.isSelected) {
                             this.selectedUnits.push(unit);
                         }
@@ -121,33 +126,20 @@ export default class GameScene extends Phaser.Scene {
             }
         })
 
-        // const cursors = this.input.keyboard.createCursorKeys();
+        const cursors = this.input.keyboard.createCursorKeys();
 
-        // const controlConfig = {
-        //     camera: this.cameras.main,
-        //     left: cursors.left,
-        //     right: cursors.right,
-        //     up: cursors.up,
-        //     down: cursors.down,
-        //     zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
-        //     zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
-        //     acceleration: 0.06,
-        //     drag: 0.0005,
-        //     maxSpeed: 1.0
-        // };
+        this.controls = new Phaser.Cameras.Controls.FixedKeyControl({
+            up: cursors.up,
+            down: cursors.down,
+            left: cursors.left,
+            right: cursors.right,
+            camera: this.cameras.main,
+            speed: 1,
+            zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
+            zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+            zoomSpeed: 0.01
+        });
 
-        // this.controls = new Phaser.Cameras.Controls.FixedKeyControl({
-        //     up: cursors.up,
-        //     down: cursors.down,
-        //     left: cursors.left,
-        //     right: cursors.right,
-        //     camera: this.cameras.main,
-        //     speed: 1,
-        //     zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
-        //     zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
-        //     zoomSpeed: 0.01
-        // });
-        //
         // const cam = this.cameras.main;
         //
         //
@@ -209,7 +201,7 @@ export default class GameScene extends Phaser.Scene {
                 }
             }
             if (this.dragging) {
-                this.drawSelectionRect(ev);
+                this.drawSelectionRect(this.getWorldPos(ev));
             }
         });
 
@@ -222,13 +214,14 @@ export default class GameScene extends Phaser.Scene {
     }
 
     update(time: number, delta: number) {
+        this.controls.update(delta);
         this.building?.update(delta);
         this.planet?.update(delta);
         this.units.forEach(unit => unit.update(delta));
     }
 
-    drawSelectionRect(ev: Pointer) {
-        const p1 = ev.position;
+    drawSelectionRect(endPoint: Vector2) {
+        const p1 = endPoint;
         const p2 = this.dragStart!;
         const x = Math.min(p1.x, p2.x);
         const y = Math.min(p1.y, p2.y);
