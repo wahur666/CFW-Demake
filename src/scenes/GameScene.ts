@@ -135,8 +135,8 @@ export default class GameScene extends Phaser.Scene {
             right: cursors.right,
             camera: this.cameras.main,
             speed: 1,
-            zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
-            zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+            zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PAGE_UP),
+            zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN),
             zoomSpeed: 0.01
         });
 
