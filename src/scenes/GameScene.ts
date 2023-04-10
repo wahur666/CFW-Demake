@@ -13,6 +13,9 @@ import {Navigation} from "../model/Navigation";
 import Pointer = Phaser.Input.Pointer;
 import Vector2 = Phaser.Math.Vector2;
 
+const edgeSize = 50; // define the size of the edge area that will trigger the camera movement
+const scrollSpeed = 10; // define the speed at which the camera will move
+
 export default class GameScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
     private units: Unit[] = [];
@@ -218,6 +221,18 @@ export default class GameScene extends Phaser.Scene {
         this.building?.update(delta);
         this.planet?.update(delta);
         this.units.forEach(unit => unit.update(delta));
+
+        if (this.input.activePointer.x < edgeSize) {
+            this.cameras.main.setScroll(this.cameras.main.scrollX - scrollSpeed, this.cameras.main.scrollY);
+        } else if (this.input.activePointer.x > this.cameras.main.width - edgeSize) {
+            this.cameras.main.setScroll(this.cameras.main.scrollX + scrollSpeed, this.cameras.main.scrollY);
+        }
+        if (this.input.activePointer.y < edgeSize) {
+            this.cameras.main.setScroll(this.cameras.main.scrollX, this.cameras.main.scrollY - scrollSpeed);
+        } else if (this.input.activePointer.y > this.cameras.main.height - edgeSize) {
+            this.cameras.main.setScroll(this.cameras.main.scrollX, this.cameras.main.scrollY + scrollSpeed);
+        }
+
     }
 
     drawSelectionRect(endPoint: Vector2) {
