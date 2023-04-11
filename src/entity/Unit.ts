@@ -3,6 +3,7 @@ import GameMap, { GameNode } from "../model/GameMap/GameMap";
 import Vector2 = Phaser.Math.Vector2;
 import { Signal, computed, signal } from "@preact/signals";
 import { nodeToPos } from "../helpers/utils";
+import GameScene from "../scenes/GameScene";
 
 export enum TravelState {
     NOT_TRAVELING,
@@ -22,13 +23,15 @@ export default class Unit extends Phaser.Physics.Arcade.Sprite {
     private navNodes: Signal<GameNode[]> = signal<GameNode[]>([]);
     targetPos: Vector2 | null = null;
     navPoints = computed(() => this.navNodes.value.map(nodeToPos))
+    gameScene: GameScene;
 
     constructor(scene: Phaser.Scene, x: number, y: number, map: GameMap) {
         super(scene, x, y, Images.SHIP);
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
         this.setScale(0.2);
-        this.selectedGraphics = this.scene.add.graphics()
+        this.selectedGraphics = this.scene.add.graphics();
+        this.gameScene = scene as GameScene;
     }
 
     get pos(): Vector2 {
@@ -37,6 +40,10 @@ export default class Unit extends Phaser.Physics.Arcade.Sprite {
 
     get isSelected(): boolean {
         return this.selected;
+    }
+
+    get isMoving(): boolean {
+        return this.body.velocity.length() > 0;
     }
 
     setSelected(selected: boolean): void {
@@ -52,8 +59,10 @@ export default class Unit extends Phaser.Physics.Arcade.Sprite {
     }
 
     stopNav() {
-        this.navNodes.value = [];
-        this.body.stop();
+        if (this.gameScene.checkIfNavEnd(this)) {
+            this.navNodes.value = [];
+            this.body.stop();
+        }
     }
 
     drawPath() {

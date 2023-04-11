@@ -41,7 +41,7 @@ export default class GameMap {
     constructor(size: number) {
         this.size = size;
         this.sectorNodeMap = nullMatrix(this.size);
-        this.createSector(0, 0, 10);
+        this.createSector(1, 1, 10);
         this.createSector(20, 5, 10);
         this.createSector(35, 9, 10);
         this.createSector(8, 20, 10);

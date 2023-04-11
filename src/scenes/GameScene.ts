@@ -7,7 +7,7 @@ import {route} from "preact-router";
 import Building from "../entity/Building";
 import Planet from "../entity/Planet";
 import GameMap from "../model/GameMap/GameMap";
-import {calculateRect, drawWidth, getRandomInt, inRect, toVec2} from "../helpers/utils";
+import {calculateRect, drawWidth, getRandomInt, inRect, posToNodeCoords, toVec2} from "../helpers/utils";
 import cursor from "../assets/cursor.png";
 import {Navigation} from "../model/Navigation";
 import Pointer = Phaser.Input.Pointer;
@@ -44,14 +44,71 @@ export default class GameScene extends Phaser.Scene {
         return this.cameras.main.getWorldPoint(pointer.x, pointer.y);
     }
 
+    isFreeSpace(pos: Vector2, force: boolean = false): boolean {
+        if (!this.map.getNode(pos.x, pos.y)) {
+            return false;
+        }
+        for (const wormhole of this.map.wormholes) {
+            if (wormhole.node1.position.equals(pos)) {
+                return false;
+            }
+            if (wormhole.node2.position.equals(pos)) {
+                return false;
+            }
+        }
+        if (!force) {
+            for (const unit of this.units) {
+                if (!unit.isMoving && toVec2(posToNodeCoords(unit.pos)).equals(pos)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    findFreeSpot(pos: Vector2): Vector2 | null {
+        const directions: Vector2[] = [
+            [-1, -1], [-1, 0], [-1, 1],
+            [0, -1], [0, 1],
+            [1, -1], [1, 0], [1, 1]
+        ].map(toVec2);
+        let possiblePoints = directions.map(d => pos.clone().add(d)).filter(p => this.isFreeSpace(p));
+        if (possiblePoints.length > 0) {
+            return possiblePoints[getRandomInt(possiblePoints.length)];
+        } else {
+            possiblePoints = directions.map(d => pos.clone().add(d)).filter(p => this.isFreeSpace(p, true));
+            if (possiblePoints.length > 0) {
+                return possiblePoints[getRandomInt(possiblePoints.length)];
+            }
+        }
+        return null;
+    }
+
+    checkIfNavEnd(unit: Unit): boolean {
+        const currPos = toVec2(posToNodeCoords(unit.pos));;
+        if (this.isFreeSpace(currPos)) {
+            return true;
+        }
+        const freePos = this.findFreeSpot(currPos);
+        if (freePos) {
+            const start = this.map.getNode(currPos.x, currPos.y);
+            const end = this.map.getNode(freePos.x, freePos.y);
+            const path = this.navi.findPath(start, end);
+            if (path.length > 0) {
+                unit.setNav(path);
+                return false;
+            }
+        }
+        return true;
+    }
+
     create() {
         const size = 64;
         this.input.setDefaultCursor(`url(${cursor}), default`);
         this.graphics = this.add.graphics();
         this.selectionRectGraphics = this.add.graphics();
-
         this.map = new GameMap(size);
-        const navi = new Navigation(this.map);
+        this.navi = new Navigation(this.map);
         this.graphics.lineStyle(2, 0x0000ff);
         for (let i = 0; i < size; i++) {
             for (let j = 0; j < size; j++) {
@@ -60,6 +117,9 @@ export default class GameScene extends Phaser.Scene {
                 }
             }
         }
+        this.cameras.main.setBounds(0, 0, 2000, 2000);
+        this.graphics.strokeRect(0, 0, 2000, 2000);
+        this.graphics.strokeCircle(1000, 1000, 1100);
         for (const wormhole of this.map.wormholes) {
             const x1 = calculateRect(wormhole.node1.position.x) + drawWidth / 2;
             const y1 = calculateRect(wormhole.node1.position.y) + drawWidth / 2;
@@ -76,6 +136,8 @@ export default class GameScene extends Phaser.Scene {
         // this.wh1 = new Wormhole(this, 260, 120);
         // this.wh2 = new Wormhole(this, 560, 120);
         this.units.push(new Unit(this, 50, 50, this.map));
+        this.units.push(new Unit(this, 50, 70, this.map));
+        this.units.push(new Unit(this, 50, 90, this.map));
         this.units.push(new Unit(this, 90, 30, this.map));
         this.input.keyboard.on("keyup-ESC", (ev) => {
             route("/", true);
@@ -102,11 +164,11 @@ export default class GameScene extends Phaser.Scene {
                             const wormhole = this.map.wormholes.find(wh => wh.isConnected(endNode));
                             if (wormhole) {
                                 const node = wormhole.getOtherNode(endNode);
-                                const newEndNodePos = node.position.clone().add(toVec2(directions[getRandomInt(8)]) );
+                                const newEndNodePos = node.position.clone().add(toVec2(directions[getRandomInt(8)]));
                                 endNode = this.map.getNode(newEndNodePos.x, newEndNodePos.y);
                             }
                         }
-                        const path = navi.findPath(this.map.getNode(x1, y1), endNode);
+                        const path = this.navi.findPath(this.map.getNode(x1, y1), endNode);
                         selectedUnit.setNav(path)
                     }
                 }
