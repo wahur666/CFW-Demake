@@ -135,11 +135,11 @@ export default class GameScene extends Phaser.Scene {
         // const rect2 = this.add.rectangle(500, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
         // this.wh1 = new Wormhole(this, 260, 120);
         // this.wh2 = new Wormhole(this, 560, 120);
-        this.units.push(new Unit(this, 50, 50, this.map));
-        this.units.push(new Unit(this, 50, 70, this.map));
-        this.units.push(new Unit(this, 50, 90, this.map));
-        this.units.push(new Unit(this, 90, 30, this.map));
-        this.input.keyboard.on("keyup-ESC", (ev) => {
+        this.units.push(new Unit(this, 50, 50));
+        this.units.push(new Unit(this, 50, 70));
+        this.units.push(new Unit(this, 50, 90));
+        this.units.push(new Unit(this, 90, 30));
+        this.input.keyboard?.on("keyup-ESC", (ev) => {
             route("/", true);
         });
 
@@ -191,7 +191,7 @@ export default class GameScene extends Phaser.Scene {
             }
         })
 
-        const cursors = this.input.keyboard.createCursorKeys();
+        const cursors = this.input.keyboard!.createCursorKeys();
 
         this.controls = new Phaser.Cameras.Controls.FixedKeyControl({
             up: cursors.up,
@@ -200,8 +200,8 @@ export default class GameScene extends Phaser.Scene {
             right: cursors.right,
             camera: this.cameras.main,
             speed: 1,
-            zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PAGE_UP),
-            zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN),
+            zoomIn: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.PAGE_UP),
+            zoomOut: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN),
             zoomSpeed: 0.01
         });
 
@@ -228,19 +228,19 @@ export default class GameScene extends Phaser.Scene {
         //
         // });
 
-        this.input.keyboard.on("keyup-Q", (ev) => {
+        this.input.keyboard!.on("keyup-Q", (ev) => {
             if (this.building) {
                 this.building.wide = 1;
             }
         });
 
-        this.input.keyboard.on("keyup-W", (ev) => {
+        this.input.keyboard!.on("keyup-W", (ev) => {
             if (this.building) {
                 this.building.wide = 2;
             }
         });
 
-        this.input.keyboard.on("keyup-E", (ev) => {
+        this.input.keyboard!.on("keyup-E", (ev) => {
             if (this.building) {
                 this.building.wide = 3;
             }

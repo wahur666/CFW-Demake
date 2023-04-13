@@ -1,5 +1,5 @@
 import { Images } from "../scenes/PreloadScene";
-import GameMap, { GameNode } from "../model/GameMap/GameMap";
+import { GameNode } from "../model/GameMap/GameMap";
 import Vector2 = Phaser.Math.Vector2;
 import { Signal, computed, signal } from "@preact/signals";
 import { nodeToPos } from "../helpers/utils";
@@ -25,7 +25,7 @@ export default class Unit extends Phaser.Physics.Arcade.Sprite {
     navPoints = computed(() => this.navNodes.value.map(nodeToPos))
     gameScene: GameScene;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, map: GameMap) {
+    constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, Images.SHIP);
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
@@ -43,7 +43,7 @@ export default class Unit extends Phaser.Physics.Arcade.Sprite {
     }
 
     get isMoving(): boolean {
-        return this.body.velocity.length() > 0;
+        return this.body!.velocity.length() > 0;
     }
 
     setSelected(selected: boolean): void {
@@ -61,7 +61,7 @@ export default class Unit extends Phaser.Physics.Arcade.Sprite {
     stopNav() {
         if (this.gameScene.checkIfNavEnd(this)) {
             this.navNodes.value = [];
-            this.body.stop();
+            this.body?.stop();
         }
     }
 
@@ -112,7 +112,7 @@ export default class Unit extends Phaser.Physics.Arcade.Sprite {
         this.selectedGraphics.clear();
         this.selectedGraphics.lineStyle(2, 0x00ff00, 1);
         this.selectedGraphics.lineBetween(this.x, this.y, this.navPoints.value[0].x, this.navPoints.value[0].y)
-        this.body.stop();
+        this.body?.stop();
         const target = this.navPoints.value[0];
         this.setRotation(Math.atan2(-this.y + target.y, -this.x + target.x) + Math.PI / 2);
         if (this.currentTravelTime < this.travelTime) {
