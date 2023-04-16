@@ -1,16 +1,12 @@
-
-
 export class IPAnim {
-
     progress: number;
-    start() {};
-    stop() {};
+    start() {}
+    stop() {}
     setProgress(percent: number) {
         this.progress = percent;
-    };
+    }
     getProgress(): number {
-        return this.progress
-    };
+        return this.progress;
+    }
     updateString() {}
-
 }

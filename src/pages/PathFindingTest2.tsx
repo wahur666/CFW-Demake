@@ -1,14 +1,13 @@
 import Phaser from "phaser";
-import {Component, ComponentChild, createRef, RenderableProps} from "preact";
+import { Component, ComponentChild, createRef, RenderableProps } from "preact";
 
-import {SHARED_CONFIG} from "../model/config";
+import { SHARED_CONFIG } from "../model/config";
 import ScaleModes = Phaser.Scale.ScaleModes;
 import PathfindingTestScene2 from "../scenes/PathfindingTestScene2";
 
 interface IProps {}
 interface IState {}
-export default class PathFindingTest2 extends Component<IProps, IState>{
-
+export default class PathFindingTest2 extends Component<IProps, IState> {
     game: Phaser.Game;
 
     canvas = createRef<HTMLCanvasElement>();
@@ -48,5 +47,4 @@ export default class PathFindingTest2 extends Component<IProps, IState>{
     render(props?: RenderableProps<IProps>, state?: Readonly<IState>): ComponentChild {
         return <canvas id={"cv1"} ref={this.canvas} />;
     }
-
 }

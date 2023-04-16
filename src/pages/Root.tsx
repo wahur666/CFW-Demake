@@ -1,7 +1,7 @@
 import { ArwesThemeProvider, Button, StylesBaseline, Text } from "@arwes/core";
 import "../app.scss";
 import { route } from "preact-router";
-import {PageRoutes} from "./routes";
+import { PageRoutes } from "./routes";
 const FONT_FAMILY_ROOT = '"Titillium Web", sans-serif';
 
 export default function Root({ path: string }) {

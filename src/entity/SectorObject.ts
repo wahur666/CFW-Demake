@@ -1,5 +1,5 @@
 export enum SectorObjectMasks {
-    OutOfBoundSpace= -1,
+    OutOfBoundSpace = -1,
     FreeSpace,
     HabitablePlanet,
     MoonPlanet,
@@ -12,9 +12,9 @@ export enum SectorObjectMasks {
 }
 
 export class SectorObject {
-    mask: SectorObjectMasks
-    size: number
-    color: number
+    mask: SectorObjectMasks;
+    size: number;
+    color: number;
 
     constructor(mask: number, size: number, color: number) {
         this.mask = mask;
@@ -23,7 +23,7 @@ export class SectorObject {
     }
 }
 
-export class HabitablePlanetObject extends SectorObject{
+export class HabitablePlanetObject extends SectorObject {
     constructor() {
         super(SectorObjectMasks.HabitablePlanet, 2, 0x0000ff);
     }

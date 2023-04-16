@@ -1,5 +1,5 @@
-import "preact/debug"
-import {render} from "preact";
+import "preact/debug";
+import { render } from "preact";
 import Router from "preact-router";
 
 import Editor from "./pages/Editor";
@@ -7,7 +7,7 @@ import Game from "./pages/Game";
 import Root from "./pages/Root";
 
 import Lobby from "./pages/Lobby";
-import {PageRoutes} from "./pages/routes";
+import { PageRoutes } from "./pages/routes";
 
 import "./style.scss";
 import PathFindingTest from "./pages/PathFindingTest";

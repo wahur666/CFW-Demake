@@ -1,5 +1,5 @@
 import WormholeObject from "./WormholeObject";
-import {nullMatrix, vec2ToArray} from "../../helpers/utils";
+import { nullMatrix, vec2ToArray } from "../../helpers/utils";
 import Vector2 = Phaser.Math.Vector2;
 
 export const NOT_A_NEIGHBOUR = 1;
@@ -31,7 +31,6 @@ export class GameNode {
     }
 }
 
-
 export default class GameMap {
     size: number;
     sectorNodeMap: (GameNode | null)[][] = [];
@@ -54,13 +53,18 @@ export default class GameMap {
     private setupNeighbours(node: GameNode) {
         const toVec2 = (arr: number[]): Vector2 => new Vector2(arr[0], arr[1]);
         const directions: Vector2[] = [
-            [-1, -1], [-1, 0], [-1, 1],
-            [0, -1], [0, 1],
-            [1, -1], [1, 0], [1, 1]
-        ].map(toVec2)
+            [-1, -1],
+            [-1, 0],
+            [-1, 1],
+            [0, -1],
+            [0, 1],
+            [1, -1],
+            [1, 0],
+            [1, 1],
+        ].map(toVec2);
         for (const direction of directions) {
             const newPos = node.position.clone().add(direction);
-            if (newPos.x < 0 || newPos.y < 0 || newPos.x > this.size-1 || newPos.y > this.size-1) {
+            if (newPos.x < 0 || newPos.y < 0 || newPos.x > this.size - 1 || newPos.y > this.size - 1) {
                 continue;
             }
             const newNeighbour = this.sectorNodeMap[newPos.x][newPos.y];
@@ -85,7 +89,6 @@ export default class GameMap {
             }
         }
     }
-
 
     private createSector(x: number, y: number, size: number): void {
         for (let i = x; i < Math.min(this.size, x + size); i++) {
@@ -115,6 +118,4 @@ export default class GameMap {
         }
         return neighbours;
     }
-
-
 }

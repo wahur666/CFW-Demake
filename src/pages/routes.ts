@@ -1,5 +1,3 @@
-
-
 export enum PageRoutes {
     ROOT = "/",
     GAME = "/game",

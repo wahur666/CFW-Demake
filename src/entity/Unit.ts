@@ -9,9 +9,8 @@ export enum TravelState {
     NOT_TRAVELING,
     PREPARE_FOR_TRAVELING,
     TRAVELING,
-    END_TRAVELING
+    END_TRAVELING,
 }
-
 
 export default abstract class Unit extends Phaser.Physics.Arcade.Sprite {
     traveling: TravelState = TravelState.NOT_TRAVELING;
@@ -22,7 +21,7 @@ export default abstract class Unit extends Phaser.Physics.Arcade.Sprite {
     // navPoints: Vector2[] = [];
     private navNodes: Signal<GameNode[]> = signal<GameNode[]>([]);
     targetPos: Vector2 | null = null;
-    navPoints = computed(() => this.navNodes.value.map(nodeToPos))
+    navPoints = computed(() => this.navNodes.value.map(nodeToPos));
     gameScene: GameScene;
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: Images) {
@@ -54,7 +53,7 @@ export default abstract class Unit extends Phaser.Physics.Arcade.Sprite {
     setNav(navNodes: GameNode[]) {
         this.navNodes.value = navNodes;
         if (this.navNodes.value.length > 0 && this.navNodes.value[0]) {
-            this.targetPos = this.navNodes.value[0].position.clone().multiply({ x: 20, y: 20 }).add({ x: 10, y: 10 })
+            this.targetPos = this.navNodes.value[0].position.clone().multiply({ x: 20, y: 20 }).add({ x: 10, y: 10 });
         }
     }
 
@@ -68,11 +67,16 @@ export default abstract class Unit extends Phaser.Physics.Arcade.Sprite {
     drawPath() {
         this.selectedGraphics.clear();
         this.selectedGraphics.lineStyle(2, 0x00ff00, 1);
-        this.selectedGraphics.strokeCircle(this.x, this.y, this.width * 1.2 * this.scale / 2);
+        this.selectedGraphics.strokeCircle(this.x, this.y, (this.width * 1.2 * this.scale) / 2);
         if (this.navPoints.value.length > 0) {
-            this.selectedGraphics.lineBetween(this.x, this.y, this.navPoints.value[0].x, this.navPoints.value[0].y)
+            this.selectedGraphics.lineBetween(this.x, this.y, this.navPoints.value[0].x, this.navPoints.value[0].y);
             for (let i = 0; i < this.navPoints.value.length - 1; i++) {
-                this.selectedGraphics.lineBetween(this.navPoints.value[i].x, this.navPoints.value[i].y, this.navPoints.value[i + 1].x, this.navPoints.value[i + 1].y)
+                this.selectedGraphics.lineBetween(
+                    this.navPoints.value[i].x,
+                    this.navPoints.value[i].y,
+                    this.navPoints.value[i + 1].x,
+                    this.navPoints.value[i + 1].y
+                );
             }
             const point = this.navPoints.value[this.navPoints.value.length - 1];
             if (point) {
@@ -80,7 +84,6 @@ export default abstract class Unit extends Phaser.Physics.Arcade.Sprite {
                 this.selectedGraphics.fillRect(point.x - 10, point.y - 10, 20, 20);
             }
         }
-
     }
 
     moveToTarget(target: Vector2, speed: number) {
@@ -111,7 +114,7 @@ export default abstract class Unit extends Phaser.Physics.Arcade.Sprite {
         // Wait until everybody is read for jump
         this.selectedGraphics.clear();
         this.selectedGraphics.lineStyle(2, 0x00ff00, 1);
-        this.selectedGraphics.lineBetween(this.x, this.y, this.navPoints.value[0].x, this.navPoints.value[0].y)
+        this.selectedGraphics.lineBetween(this.x, this.y, this.navPoints.value[0].x, this.navPoints.value[0].y);
         this.body?.stop();
         const target = this.navPoints.value[0];
         this.setRotation(Math.atan2(-this.y + target.y, -this.x + target.x) + Math.PI / 2);
@@ -159,7 +162,6 @@ export default abstract class Unit extends Phaser.Physics.Arcade.Sprite {
         this.traveling = TravelState.NOT_TRAVELING;
     }
 
-
     update(delta: number) {
         switch (this.traveling) {
             case TravelState.PREPARE_FOR_TRAVELING:
@@ -174,8 +176,6 @@ export default abstract class Unit extends Phaser.Physics.Arcade.Sprite {
             case TravelState.NOT_TRAVELING:
             default:
                 this.updateNotTraveling(delta);
-
         }
     }
-
 }

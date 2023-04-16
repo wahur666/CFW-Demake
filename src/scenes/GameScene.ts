@@ -1,20 +1,20 @@
 import Phaser from "phaser";
-import {SceneRegistry} from "./SceneRegistry";
-import {SHARED_CONFIG} from "../model/config";
+import { SceneRegistry } from "./SceneRegistry";
+import { SHARED_CONFIG } from "../model/config";
 import Wormhole from "../entity/Wormhole";
-import Unit, {TravelState} from "../entity/Unit";
-import {route} from "preact-router";
+import Unit, { TravelState } from "../entity/Unit";
+import { route } from "preact-router";
 import Building from "../entity/Building";
 import Planet from "../entity/Planet";
 import GameMap from "../model/GameMap/GameMap";
-import {calculateRect, drawWidth, getRandomInt, inRect, posToNodeCoords, toVec2} from "../helpers/utils";
+import { calculateRect, drawWidth, getRandomInt, inRect, posToNodeCoords, toVec2 } from "../helpers/utils";
 import cursor from "../assets/cursor.png";
-import {Navigation} from "../model/Navigation";
+import { Navigation } from "../model/Navigation";
 import Pointer = Phaser.Input.Pointer;
 import Vector2 = Phaser.Math.Vector2;
-import {Corvette} from "../entity/units/Corvette";
-import {Harvester} from "../entity/units/Harvester";
-import {Fabricator} from "../entity/units/Fabricator";
+import { Corvette } from "../entity/units/Corvette";
+import { Harvester } from "../entity/units/Harvester";
+import { Fabricator } from "../entity/units/Fabricator";
 
 const edgeSize = 50; // define the size of the edge area that will trigger the camera movement
 const scrollSpeed = 10; // define the speed at which the camera will move
@@ -71,15 +71,20 @@ export default class GameScene extends Phaser.Scene {
 
     findFreeSpot(pos: Vector2): Vector2 | null {
         const directions: Vector2[] = [
-            [-1, -1], [-1, 0], [-1, 1],
-            [0, -1], [0, 1],
-            [1, -1], [1, 0], [1, 1]
+            [-1, -1],
+            [-1, 0],
+            [-1, 1],
+            [0, -1],
+            [0, 1],
+            [1, -1],
+            [1, 0],
+            [1, 1],
         ].map(toVec2);
-        let possiblePoints = directions.map(d => pos.clone().add(d)).filter(p => this.isFreeSpace(p));
+        let possiblePoints = directions.map((d) => pos.clone().add(d)).filter((p) => this.isFreeSpace(p));
         if (possiblePoints.length > 0) {
             return possiblePoints[getRandomInt(possiblePoints.length)];
         } else {
-            possiblePoints = directions.map(d => pos.clone().add(d)).filter(p => this.isFreeSpace(p, true));
+            possiblePoints = directions.map((d) => pos.clone().add(d)).filter((p) => this.isFreeSpace(p, true));
             if (possiblePoints.length > 0) {
                 return possiblePoints[getRandomInt(possiblePoints.length)];
             }
@@ -88,7 +93,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     checkIfNavEnd(unit: Unit): boolean {
-        const currPos = toVec2(posToNodeCoords(unit.pos));;
+        const currPos = toVec2(posToNodeCoords(unit.pos));
         if (this.isFreeSpace(currPos)) {
             return true;
         }
@@ -132,7 +137,6 @@ export default class GameScene extends Phaser.Scene {
             this.wormholes.push(new Wormhole(this, x2, y2));
         }
 
-
         // this.input.mouse.disableContextMenu();
         // const rect1 = this.add.rectangle(10, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
         // const rect2 = this.add.rectangle(500, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
@@ -162,11 +166,16 @@ export default class GameScene extends Phaser.Scene {
                         let endNode = this.map.getNode(x, y);
                         if (endNode.hasWormhole) {
                             const directions: [number, number][] = [
-                                [-1, -1], [-1, 0], [-1, 1],
-                                [0, -1], [0, 1],
-                                [1, -1], [1, 0], [1, 1]
-                            ]
-                            const wormhole = this.map.wormholes.find(wh => wh.isConnected(endNode));
+                                [-1, -1],
+                                [-1, 0],
+                                [-1, 1],
+                                [0, -1],
+                                [0, 1],
+                                [1, -1],
+                                [1, 0],
+                                [1, 1],
+                            ];
+                            const wormhole = this.map.wormholes.find((wh) => wh.isConnected(endNode));
                             if (wormhole) {
                                 const node = wormhole.getOtherNode(endNode);
                                 const newEndNodePos = node.position.clone().add(toVec2(directions[getRandomInt(8)]));
@@ -174,7 +183,7 @@ export default class GameScene extends Phaser.Scene {
                             }
                         }
                         const path = this.navi.findPath(this.map.getNode(x1, y1), endNode);
-                        selectedUnit.setNav(path)
+                        selectedUnit.setNav(path);
                     }
                 }
             }
@@ -194,7 +203,7 @@ export default class GameScene extends Phaser.Scene {
                 this.dragStart = null;
                 this.selectionRectGraphics.clear();
             }
-        })
+        });
 
         const cursors = this.input.keyboard!.createCursorKeys();
 
@@ -207,7 +216,7 @@ export default class GameScene extends Phaser.Scene {
             speed: 1,
             zoomIn: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.PAGE_UP),
             zoomOut: this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.PAGE_DOWN),
-            zoomSpeed: 0.01
+            zoomSpeed: 0.01,
         });
 
         // const cam = this.cameras.main;
@@ -253,12 +262,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.input.on("pointermove", (ev: Pointer) => {
             if (this.building) {
-                const distance = Phaser.Math.Distance.Between(
-                    ev.x,
-                    ev.y,
-                    this.planet.x,
-                    this.planet.y
-                );
+                const distance = Phaser.Math.Distance.Between(ev.x, ev.y, this.planet.x, this.planet.y);
                 if (Math.abs(distance - this.planet.radius) < 20) {
                     this.building.unBound = false;
                     this.building.nearPlanet = this.planet;
@@ -280,14 +284,14 @@ export default class GameScene extends Phaser.Scene {
     }
 
     calcSquare(x: number, y: number): [number, number] {
-        return [Math.floor(x / drawWidth), Math.floor(y / drawWidth)]
+        return [Math.floor(x / drawWidth), Math.floor(y / drawWidth)];
     }
 
     update(time: number, delta: number) {
         this.controls.update(delta);
         this.building?.update(delta);
         this.planet?.update(delta);
-        this.units.forEach(unit => unit.update(delta));
+        this.units.forEach((unit) => unit.update(delta));
 
         if (this.input.activePointer.x < edgeSize) {
             this.cameras.main.setScroll(this.cameras.main.scrollX - scrollSpeed, this.cameras.main.scrollY);
@@ -299,7 +303,6 @@ export default class GameScene extends Phaser.Scene {
         } else if (this.input.activePointer.y > this.cameras.main.height - edgeSize) {
             this.cameras.main.setScroll(this.cameras.main.scrollX, this.cameras.main.scrollY + scrollSpeed);
         }
-
     }
 
     drawSelectionRect(endPoint: Vector2) {
@@ -311,7 +314,7 @@ export default class GameScene extends Phaser.Scene {
         const h = Math.abs(p1.y - p2.y);
         this.selectionRectGraphics.clear();
         this.selectionRectGraphics.lineStyle(2, 0x00ff00);
-        this.selectionRectGraphics.fillStyle(0x00ff00, 0.2)
+        this.selectionRectGraphics.fillStyle(0x00ff00, 0.2);
         this.selectionRectGraphics.strokeRect(x, y, w, h);
         this.selectionRectGraphics.fillRect(x, y, w, h);
     }

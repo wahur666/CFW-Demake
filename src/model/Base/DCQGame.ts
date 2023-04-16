@@ -1,6 +1,6 @@
 import _CQGAME = CQGAMETYPES._CQGAME;
 import OPTIONS = CQGAMETYPES.OPTIONS;
-import {applyMixins} from "../TsBlackMagic/mixins";
+import { applyMixins } from "../TsBlackMagic/mixins";
 import RANDOM_TEMPLATE = CQGAMETYPES.RANDOM_TEMPLATE;
 import GAMETYPE = CQGAMETYPES.GAMETYPE;
 import MONEY = CQGAMETYPES.MONEY;
@@ -13,18 +13,17 @@ import COMMANDLIMIT = CQGAMETYPES.COMMANDLIMIT;
 
 const MAX_PLAYERS = 8;
 
-
 export namespace CQGAMETYPES {
     export enum DIFFICULTY {
         NODIFFICULTY,
         EASY,
         AVERAGE,
-        HARD
+        HARD,
     }
 
     export enum TYPE {
         HUMAN,
-        COMPUTER
+        COMPUTER,
     }
 
     export enum COMP_CHALANGE {
@@ -36,10 +35,10 @@ export namespace CQGAMETYPES {
     }
 
     export enum STATE {
-        OPEN,		// slot can be used, but not active at this time
-        CLOSED,		// host has disallowed this slot
-        ACTIVE,		// slot is being used by computer or human player, has not accepted game rules yet
-        READY		// slot is active and player has accepted rules
+        OPEN, // slot can be used, but not active at this time
+        CLOSED, // host has disallowed this slot
+        ACTIVE, // slot is being used by computer or human player, has not accepted game rules yet
+        READY, // slot is active and player has accepted rules
     }
 
     export enum RACE {
@@ -51,7 +50,7 @@ export namespace CQGAMETYPES {
     }
 
     export enum COLOR {
-        UNDEFINEDCOLOR,	// used for computer players
+        UNDEFINEDCOLOR, // used for computer players
         YELLOW,
         RED,
         BLUE,
@@ -59,7 +58,7 @@ export namespace CQGAMETYPES {
         GREEN,
         ORANGE,
         PURPLE,
-        AQUA
+        AQUA,
     }
 
     export enum TEAM {
@@ -67,7 +66,7 @@ export namespace CQGAMETYPES {
         _1,
         _2,
         _3,
-        _4
+        _4,
     }
 
     export class SLOT {
@@ -78,76 +77,67 @@ export namespace CQGAMETYPES {
         color: COLOR = 5;
         team: TEAM = 4;
         zoneSeat: number = 3;
-        dpid: number;			// id of player, 0 if computer player
+        dpid: number; // id of player, 0 if computer player
         constructor(dpid: number) {
             this.dpid = dpid;
         }
     }
 
-    export enum GAMETYPE			// need 2 bits
-    {
+    export enum GAMETYPE { // need 2 bits
         KILL_UNITS = -2,
         KILL_HQ_PLATS,
-        MISSION_DEFINED,	// must be == 0
-        KILL_PLATS_FABS
+        MISSION_DEFINED, // must be == 0
+        KILL_PLATS_FABS,
     }
 
-    export enum MONEY				// need 2 bits
-    {
+    export enum MONEY { // need 2 bits
         LOW_MONEY = -2,
         MEDIUM_MONEY,
-        HIGH_MONEY
+        HIGH_MONEY,
     }
 
-    export enum MAPTYPE			// need 2 bits
-    {
+    export enum MAPTYPE { // need 2 bits
         SELECTED_MAP = -2,
-        USER_MAP,			// from saved game dir
-        RANDOM_MAP
+        USER_MAP, // from saved game dir
+        RANDOM_MAP,
     }
 
-    export enum MAPSIZE			// need 2 bits
-    {
+    export enum MAPSIZE { // need 2 bits
         SMALL_MAP = -2,
         MEDIUM_MAP,
-        LARGE_MAP
+        LARGE_MAP,
     }
 
-    export enum TERRAIN			// need 2 bits
-    {
+    export enum TERRAIN { // need 2 bits
         LIGHT_TERRAIN = -2,
         MEDIUM_TERRAIN,
-        HEAVY_TERRAIN
+        HEAVY_TERRAIN,
     }
 
-    export enum STARTING_UNITS		// need 2 bits
-    {
+    export enum STARTING_UNITS { // need 2 bits
         UNITS_MINIMAL = -2,
         UNITS_MEDIUM,
-        UNITS_LARGE
+        UNITS_LARGE,
     }
 
-    export enum VISIBILITYMODE		// need 2 bits
-    {
+    export enum VISIBILITYMODE { // need 2 bits
         VISIBILITY_NORMAL = -1,
         VISIBILITY_EXPLORED,
-        VISIBILITY_ALL
+        VISIBILITY_ALL,
     }
 
-    export enum RANDOM_TEMPLATE	//need 2 bits
-    {
+    export enum RANDOM_TEMPLATE { //need 2 bits
         TEMPLATE_NEW_RANDOM = -2,
         TEMPLATE_RANDOM,
         TEMPLATE_RING,
         TEMPLATE_STAR,
     }
 
-    export enum COMMANDLIMIT		// need 2 bits
-    {
+    export enum COMMANDLIMIT { // need 2 bits
         COMMAND_LOW = -2,
         COMMAND_NORMAL,
         COMMAND_MID,
-        COMMAND_HIGH
+        COMMAND_HIGH,
     }
 
     export class OPTIONS {
@@ -159,7 +149,7 @@ export namespace CQGAMETYPES {
          * - Kill Plast + Fabs
          * */
         gameType: GAMETYPE = GAMETYPE.KILL_HQ_PLATS;
-        gameSpeed: number = 5;	// need enough bits for -16 to 15
+        gameSpeed: number = 5; // need enough bits for -16 to 15
 
         regenOn: number = 1;
         spectatorsOn: number = 1;
@@ -213,17 +203,14 @@ export namespace CQGAMETYPES {
     }
 
     export class _CQGAME {
-        activeSlots: number = 8;			// valid from 1 to MAX_PLAYERS
-        bHostBusy: number = 1;			// host is not on the final screen
+        activeSlots: number = 8; // valid from 1 to MAX_PLAYERS
+        bHostBusy: number = 1; // host is not on the final screen
         startCountdown: number = 4;
         slot: SLOT[];
     }
+} // end namespace CQGAMETYPES
 
-}  // end namespace CQGAMETYPES
-
-
-export interface CQGame extends CQGAMETYPES._CQGAME, CQGAMETYPES.OPTIONS {
-}
+export interface CQGame extends CQGAMETYPES._CQGAME, CQGAMETYPES.OPTIONS {}
 
 export class CQGame {
     constructor() {
@@ -254,5 +241,4 @@ export class CQGame {
     }
 }
 
-applyMixins(CQGame, [CQGAMETYPES._CQGAME, CQGAMETYPES.OPTIONS])
-
+applyMixins(CQGame, [CQGAMETYPES._CQGAME, CQGAMETYPES.OPTIONS]);

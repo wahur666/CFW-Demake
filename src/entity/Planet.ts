@@ -1,10 +1,8 @@
 import GameScene from "../scenes/GameScene";
-import {d2r} from "../helpers/utils";
+import { d2r } from "../helpers/utils";
 import Building from "./Building";
 
-
 export default class Planet extends Phaser.GameObjects.Sprite {
-
     radius = 130;
     graphics: Phaser.GameObjects.Graphics;
     showBuildRings = true;
@@ -16,7 +14,7 @@ export default class Planet extends Phaser.GameObjects.Sprite {
     constructor(scene: GameScene, x: number, y: number, texture: string) {
         super(scene, x, y, texture);
         this.scene.add.existing(this);
-        this.graphics = this.scene.add.graphics()
+        this.graphics = this.scene.add.graphics();
     }
 
     update(delta: number) {
@@ -36,7 +34,7 @@ export default class Planet extends Phaser.GameObjects.Sprite {
 
     buildBuilding(building: Building, ...slots: number[]): boolean {
         for (const slot of slots) {
-            if(this.slots[slot] === 1) {
+            if (this.slots[slot] === 1) {
                 return false;
             }
         }
@@ -46,6 +44,4 @@ export default class Planet extends Phaser.GameObjects.Sprite {
         this.buildings.push(building.clone());
         return true;
     }
-
-
 }

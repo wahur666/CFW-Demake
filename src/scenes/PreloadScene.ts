@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
-import {SceneRegistry} from "./SceneRegistry";
-import {defaultFont} from "../helpers/utils";
-import {SHARED_CONFIG} from "../model/config";
+import { SceneRegistry } from "./SceneRegistry";
+import { defaultFont } from "../helpers/utils";
+import { SHARED_CONFIG } from "../model/config";
 
 import wormhole from "../assets/ufoBlue.png";
 import corvette from "../assets/playerShip1_blue.png";
@@ -26,9 +26,8 @@ export enum Images {
     LAVA_PLANET = "lava-planet",
     BAREN_PLANET = "baren-planet",
     FABRICATOR = "fabricator",
-    HARVESTER = "harvester"
+    HARVESTER = "harvester",
 }
-
 
 export default class PreloadScene extends Phaser.Scene {
     loadingText: Phaser.GameObjects.Text;
@@ -44,13 +43,12 @@ export default class PreloadScene extends Phaser.Scene {
     createLoadingGui() {
         this.loadingText = this.add.text(this.config.width / 2 - 85, this.config.height / 2 - 110, "Loading...", {
             fontFamily: defaultFont,
-            fontSize: "50px"
+            fontSize: "50px",
         });
-        this.background = this.add.rectangle(this.config.width / 2, this.config.height / 2 + 50, 600, 50, 0xFFFFFF);
-        this.foreground = this.add.rectangle(343, this.config.height / 2 + 50, 595, 45, 0x233565)
-            .setOrigin(0, 0.5);
+        this.background = this.add.rectangle(this.config.width / 2, this.config.height / 2 + 50, 600, 50, 0xffffff);
+        this.foreground = this.add.rectangle(343, this.config.height / 2 + 50, 595, 45, 0x233565).setOrigin(0, 0.5);
         this.load.on("progress", (value) => {
-            this.foreground.setDisplaySize(595 * value | 0, 45);
+            this.foreground.setDisplaySize((595 * value) | 0, 45);
         });
     }
 
@@ -78,5 +76,4 @@ export default class PreloadScene extends Phaser.Scene {
         this.loadingText.destroy();
         this.scene.start(SceneRegistry.GAME);
     }
-
 }

@@ -1,7 +1,6 @@
-import {GameNode} from "./GameMap";
+import { GameNode } from "./GameMap";
 
 export default class WormholeObject {
-
     node1: GameNode;
     node2: GameNode;
     distance: number;

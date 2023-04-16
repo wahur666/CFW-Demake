@@ -1,10 +1,10 @@
 import Phaser from "phaser";
-import {SHARED_CONFIG} from "../model/config";
-import {SceneRegistry} from "./SceneRegistry";
-import {Navigation} from "../model/Navigation";
+import { SHARED_CONFIG } from "../model/config";
+import { SceneRegistry } from "./SceneRegistry";
+import { Navigation } from "../model/Navigation";
 import earcut from "earcut";
 import Vector2 = Phaser.Math.Vector2;
-import {astar} from "../astar";
+import { astar } from "../astar";
 
 const mapBounds = {
     left: 10,
@@ -29,16 +29,7 @@ const objectBounds = [
 ];
 
 function rectPoly({ left, top, right, bottom }) {
-    return [
-        left,
-        top,
-        right,
-        top,
-        right,
-        bottom,
-        left,
-        bottom,
-    ];
+    return [left, top, right, top, right, bottom, left, bottom];
 }
 
 // Return rectangle with added margin
@@ -51,36 +42,22 @@ function withMargin({ left, top, right, bottom }, amount) {
     };
 }
 
-const boundariesVerts = rectPoly(
-    withMargin(mapBounds, -20)
-);
-const objectVerts = objectBounds.flatMap((b) =>
-    rectPoly(withMargin(b, 10))
-);
+const boundariesVerts = rectPoly(withMargin(mapBounds, -20));
+const objectVerts = objectBounds.flatMap((b) => rectPoly(withMargin(b, 10)));
 const mapVerts = [...boundariesVerts, ...objectVerts];
 
 // Generate indices for object vertices (ie. the polygons that will be cut as holes)
-const holeIndices = new Array(objectBounds.length)
-    .fill(0)
-    .map((_, i) => (i + 1) * 4);
+const holeIndices = new Array(objectBounds.length).fill(0).map((_, i) => (i + 1) * 4);
 
 // Triangulate the polygon
 const indices = earcut(mapVerts, holeIndices);
 
 // End result is triangle indices pointing to our vertex data array
 // Convert the indices (ie. [i]) back to vertices (ie. [x, y])
-const vertices = indices.flatMap((index) => [
-    mapVerts[index * 2],
-    mapVerts[index * 2 + 1],
-]);
+const vertices = indices.flatMap((index) => [mapVerts[index * 2], mapVerts[index * 2 + 1]]);
 const c = (e) => [e.left, e.top, e.right - e.left, e.bottom - e.top];
 
-
-function findTriangleContaining(
-    indices: number[],
-    vertices: number[],
-    point: Point
-) {
+function findTriangleContaining(indices: number[], vertices: number[], point: Point) {
     let i = 0;
     for (const triangle of triangles(indices, vertices)) {
         if (triangleContainsPoint(triangle, point)) {
@@ -91,19 +68,11 @@ function findTriangleContaining(
     return i;
 }
 
-const startPos: Point = [150, 200]
-const endPos: Point = [400, 400]
+const startPos: Point = [150, 200];
+const endPos: Point = [400, 400];
 
-const startTriangle = findTriangleContaining(
-    indices,
-    mapVerts,
-    startPos
-);
-const endTriangle = findTriangleContaining(
-    indices,
-    mapVerts,
-    endPos
-);
+const startTriangle = findTriangleContaining(indices, mapVerts, startPos);
+const endTriangle = findTriangleContaining(indices, mapVerts, endPos);
 
 type Node = { id: number; neighbours: Node[] };
 const graph: Node[] = [];
@@ -119,10 +88,7 @@ for (let i = 0; i < tIndices.length; ++i) {
 for (const [triangle, indices0] of tIndices.entries()) {
     const neighbours = [...tIndices.entries()]
         .filter(([nTriangle, indices1]) => {
-            return (
-                nTriangle !== triangle &&
-                doTrianglesShareEdge(indices0, indices1)
-            );
+            return nTriangle !== triangle && doTrianglesShareEdge(indices0, indices1);
         })
         .map(([nTriangle]) => graph[nTriangle]);
 
@@ -134,29 +100,15 @@ type Triangle = [Point, Point, Point];
 
 function* triangleIndices(indices: number[]) {
     for (let i = 0; i < indices.length; i += 3) {
-        yield [indices[i], indices[i + 1], indices[i + 2]] as [
-            number,
-            number,
-            number
-        ];
+        yield [indices[i], indices[i + 1], indices[i + 2]] as [number, number, number];
     }
 }
 
-const startAndEndNeighbourIndices = [
-    ...graph[startTriangle].neighbours,
-    ...graph[endTriangle].neighbours,
-].flatMap(({ id }) => {
-    return [
-        indices[id * 3 + 0],
-        indices[id * 3 + 1],
-        indices[id * 3 + 2],
-    ];
+const startAndEndNeighbourIndices = [...graph[startTriangle].neighbours, ...graph[endTriangle].neighbours].flatMap(({ id }) => {
+    return [indices[id * 3 + 0], indices[id * 3 + 1], indices[id * 3 + 2]];
 });
 
-function doTrianglesShareEdge(
-    indices0: [number, number, number],
-    indices1: [number, number, number]
-) {
+function doTrianglesShareEdge(indices0: [number, number, number], indices1: [number, number, number]) {
     // If triangles A and B share two indices, they share an edge
     let shared = 0;
     for (const i of indices0) {
@@ -169,18 +121,9 @@ function doTrianglesShareEdge(
 
 function* triangles(indices: number[], vertices: number[]) {
     for (const [i0, i1, i2] of triangleIndices(indices)) {
-        const p0: Point = [
-            vertices[i0 * 2],
-            vertices[i0 * 2 + 1],
-        ];
-        const p1: Point = [
-            vertices[i1 * 2],
-            vertices[i1 * 2 + 1],
-        ];
-        const p2: Point = [
-            vertices[i2 * 2],
-            vertices[i2 * 2 + 1],
-        ];
+        const p0: Point = [vertices[i0 * 2], vertices[i0 * 2 + 1]];
+        const p1: Point = [vertices[i1 * 2], vertices[i1 * 2 + 1]];
+        const p2: Point = [vertices[i2 * 2], vertices[i2 * 2 + 1]];
 
         yield [p0, p1, p2] as Triangle;
     }
@@ -188,10 +131,7 @@ function* triangles(indices: number[], vertices: number[]) {
 
 // https://blackpawn.com/texts/pointinpoly/default.html
 // https://github.com/mattdesl/point-in-triangle
-function triangleContainsPoint(
-    triangle: Triangle,
-    testing: Point
-) {
+function triangleContainsPoint(triangle: Triangle, testing: Point) {
     //compute vectors & dot products
     const cx = testing[0],
         cy = testing[1],
@@ -245,21 +185,9 @@ function lengthWithWeights(pathVertices, weights) {
 }
 
 function triangleMidPoint(triangleIndex) {
-    const tIndices = [
-        indices[triangleIndex * 3 + 0],
-        indices[triangleIndex * 3 + 1],
-        indices[triangleIndex * 3 + 2],
-    ];
-    const x =
-        tIndices.reduce(
-            (prev, cur) => prev + mapVerts[cur * 2 + 0],
-            0
-        ) / 3;
-    const y =
-        tIndices.reduce(
-            (prev, cur) => prev + mapVerts[cur * 2 + 1],
-            0
-        ) / 3;
+    const tIndices = [indices[triangleIndex * 3 + 0], indices[triangleIndex * 3 + 1], indices[triangleIndex * 3 + 2]];
+    const x = tIndices.reduce((prev, cur) => prev + mapVerts[cur * 2 + 0], 0) / 3;
+    const y = tIndices.reduce((prev, cur) => prev + mapVerts[cur * 2 + 1], 0) / 3;
     return [x, y];
 }
 
@@ -289,29 +217,13 @@ function* pathToEdges(path, graph) {
         const fromTriangle = graph[path[i - 1]].id;
         const toTriangle = graph[path[i]].id;
 
-        const tri0 = [
-            indices[fromTriangle * 3 + 0],
-            indices[fromTriangle * 3 + 1],
-            indices[fromTriangle * 3 + 2],
-        ];
-        const tri1 = [
-            indices[toTriangle * 3 + 0],
-            indices[toTriangle * 3 + 1],
-            indices[toTriangle * 3 + 2],
-        ];
+        const tri0 = [indices[fromTriangle * 3 + 0], indices[fromTriangle * 3 + 1], indices[fromTriangle * 3 + 2]];
+        const tri1 = [indices[toTriangle * 3 + 0], indices[toTriangle * 3 + 1], indices[toTriangle * 3 + 2]];
 
         // Find vertices in both triangles. MUST have length of 2
-        const sharedVertices = tri0.filter((i) =>
-            tri1.includes(i)
-        );
-        const vert0 = [
-            mapVerts[sharedVertices[0] * 2 + 0],
-            mapVerts[sharedVertices[0] * 2 + 1],
-        ];
-        const vert1 = [
-            mapVerts[sharedVertices[1] * 2 + 0],
-            mapVerts[sharedVertices[1] * 2 + 1],
-        ];
+        const sharedVertices = tri0.filter((i) => tri1.includes(i));
+        const vert0 = [mapVerts[sharedVertices[0] * 2 + 0], mapVerts[sharedVertices[0] * 2 + 1]];
+        const vert1 = [mapVerts[sharedVertices[1] * 2 + 0], mapVerts[sharedVertices[1] * 2 + 1]];
 
         yield [vert0, vert1];
     }
@@ -321,7 +233,6 @@ const pathVertices = [...pathToEdges(path, graph)];
 console.log(pathVertices);
 
 export default class PathfindingTestScene2 extends Phaser.Scene {
-
     private config: typeof SHARED_CONFIG;
     graphics: Phaser.GameObjects.Graphics;
 
@@ -343,38 +254,17 @@ export default class PathfindingTestScene2 extends Phaser.Scene {
         graphics.lineStyle(1, 0xffeebb, 1);
 
         for (let i = 0; i < vertices.length; i += 6) {
-            graphics.lineBetween(
-                vertices[i],
-                vertices[i + 1],
-                vertices[i + 2],
-                vertices[i + 3]
-            );
-            graphics.lineBetween(
-                vertices[i + 2],
-                vertices[i + 3],
-                vertices[i + 4],
-                vertices[i + 5]
-            );
-            graphics.lineBetween(
-                vertices[i],
-                vertices[i + 1],
-                vertices[i + 4],
-                vertices[i + 5]
-            );
+            graphics.lineBetween(vertices[i], vertices[i + 1], vertices[i + 2], vertices[i + 3]);
+            graphics.lineBetween(vertices[i + 2], vertices[i + 3], vertices[i + 4], vertices[i + 5]);
+            graphics.lineBetween(vertices[i], vertices[i + 1], vertices[i + 4], vertices[i + 5]);
         }
-        graphics.fillStyle(0x00ff00, 1)
+        graphics.fillStyle(0x00ff00, 1);
         graphics.fillRect(startPos[0], startPos[1], 5, 5);
         graphics.fillRect(endPos[0], endPos[1], 5, 5);
 
         graphics.lineStyle(1, 0x00ff00, 1);
         for (const pathVertex of pathVertices) {
-            graphics.lineBetween(
-                pathVertex[0][0],
-                pathVertex[0][1],
-                pathVertex[1][0],
-                pathVertex[1][1]
-            );
+            graphics.lineBetween(pathVertex[0][0], pathVertex[0][1], pathVertex[1][0], pathVertex[1][1]);
         }
     }
-
 }

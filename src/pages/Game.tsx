@@ -1,12 +1,12 @@
 import Phaser from "phaser";
-import {Component, ComponentChild, createRef, RenderableProps} from "preact";
-import {signal} from "@preact/signals";
+import { Component, ComponentChild, createRef, RenderableProps } from "preact";
+import { signal } from "@preact/signals";
 
-import {SHARED_CONFIG} from "../model/config";
+import { SHARED_CONFIG } from "../model/config";
 import GameScene from "../scenes/GameScene";
 import PreloadScene from "../scenes/PreloadScene";
 import EditorButton from "../components/Editor/EditorButton";
-import {SectorObjectMasks} from "../entity/SectorObject";
+import { SectorObjectMasks } from "../entity/SectorObject";
 
 import ScaleModes = Phaser.Scale.ScaleModes;
 
@@ -18,7 +18,7 @@ interface IState {}
 const guiVisible = signal<boolean>(false);
 const objectMode = signal<SectorObjectMasks>(SectorObjectMasks.OrePatch);
 
-export {guiVisible, objectMode}
+export { guiVisible, objectMode };
 
 export default class Game extends Component<IProps, IState> {
     game: Phaser.Game;
@@ -57,26 +57,24 @@ export default class Game extends Component<IProps, IState> {
         this.game.destroy(true, false);
     }
 
-    render(
-        props: RenderableProps<IProps> | undefined,
-        state: Readonly<IState> | undefined,
-        context: any
-    ): ComponentChild {
+    render(props: RenderableProps<IProps> | undefined, state: Readonly<IState> | undefined, context: any): ComponentChild {
         return (
             <>
-                {guiVisible.value && <div className="absolute-zero disable-pointer-event flex flex-row-reverse ">
-                    <div className="flex flex-col items-center justify-center">
-                        <EditorButton cb={() => console.log("yeet")} name={"Habitable Planet"}/>
-                        <EditorButton cb={() => console.log("yeet")} name={"Rocky Planet"}/>
-                        <EditorButton cb={() => console.log("yeet")} name={"Gas Planet"}/>
-                        <EditorButton cb={() => console.log("yeet")} name={"Swamp Planet"}/>
-                        <EditorButton cb={() => console.log("yeet")} name={"Wormhole"}/>
-                        <EditorButton cb={() => console.log("yeet")} name={"Gas"}/>
-                        <EditorButton cb={() => console.log("yeet")} name={"Ore"}/>
-                        <EditorButton cb={() => console.log("yeet")} name={"Generate string"}/>
-                        {/*<EditorArea/>*/}
+                {guiVisible.value && (
+                    <div className="absolute-zero disable-pointer-event flex flex-row-reverse ">
+                        <div className="flex flex-col items-center justify-center">
+                            <EditorButton cb={() => console.log("yeet")} name={"Habitable Planet"} />
+                            <EditorButton cb={() => console.log("yeet")} name={"Rocky Planet"} />
+                            <EditorButton cb={() => console.log("yeet")} name={"Gas Planet"} />
+                            <EditorButton cb={() => console.log("yeet")} name={"Swamp Planet"} />
+                            <EditorButton cb={() => console.log("yeet")} name={"Wormhole"} />
+                            <EditorButton cb={() => console.log("yeet")} name={"Gas"} />
+                            <EditorButton cb={() => console.log("yeet")} name={"Ore"} />
+                            <EditorButton cb={() => console.log("yeet")} name={"Generate string"} />
+                            {/*<EditorArea/>*/}
+                        </div>
                     </div>
-                </div>}
+                )}
                 <canvas id={"cv1"} ref={this.canvas} />
             </>
         );
