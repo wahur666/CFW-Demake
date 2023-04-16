@@ -13,7 +13,7 @@ export enum TravelState {
 }
 
 
-export default class Unit extends Phaser.Physics.Arcade.Sprite {
+export default abstract class Unit extends Phaser.Physics.Arcade.Sprite {
     traveling: TravelState = TravelState.NOT_TRAVELING;
     private selected = false;
     travelTime = 1000;
@@ -25,8 +25,8 @@ export default class Unit extends Phaser.Physics.Arcade.Sprite {
     navPoints = computed(() => this.navNodes.value.map(nodeToPos))
     gameScene: GameScene;
 
-    constructor(scene: Phaser.Scene, x: number, y: number) {
-        super(scene, x, y, Images.SHIP);
+    constructor(scene: Phaser.Scene, x: number, y: number, texture: Images) {
+        super(scene, x, y, texture);
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
         this.setScale(0.2);
@@ -98,7 +98,7 @@ export default class Unit extends Phaser.Physics.Arcade.Sprite {
                 this.navNodes.value = this.navNodes.value.slice(1);
                 if (this.navNodes.value.length === 0) {
                     this.stopNav();
-                } else if (this.navNodes.value[0].hasWormhole) {
+                } else if (this.navNodes.value.length > 1 && this.navNodes.value[0].hasWormhole && this.navNodes.value[1].hasWormhole) {
                     this.traveling = TravelState.PREPARE_FOR_TRAVELING;
                 }
             } else {

@@ -1,19 +1,32 @@
 import * as Phaser from "phaser";
 import {SceneRegistry} from "./SceneRegistry";
+import {defaultFont} from "../helpers/utils";
+import {SHARED_CONFIG} from "../model/config";
+
 import wormhole from "../assets/ufoBlue.png";
-import ship from "../assets/playerShip1_blue.png";
+import corvette from "../assets/playerShip1_blue.png";
 import structure_house from "../assets/structure_house.png";
 import structure_farm from "../assets/structure_farm.png";
 import planet00 from "../assets/planet00_d.png";
-import {defaultFont} from "../helpers/utils";
-import {SHARED_CONFIG} from "../model/config";
+import factory_icon from "../assets/icons8-factory-96.png";
+import home_icon from "../assets/icons8-home-96.png";
+import lava_planet from "../assets/Lava.png";
+import baren_planet from "../assets/Baren.png";
+import fabricator from "../assets/enemyBlack3.png";
+import harvester from "../assets/enemyBlack4.png";
 
 export enum Images {
     HOUSE_ICON = "house-icon",
     FARM_ICON = "farm-icon",
     WORMHOLE = "wormhole",
-    SHIP = "ship",
+    CORVETTE = "corvette",
     PLANET = "planet",
+    FACTORY_ICON = "factory-icon",
+    HOME_ICON = "home-icon",
+    LAVA_PLANET = "lava-planet",
+    BAREN_PLANET = "baren-planet",
+    FABRICATOR = "fabricator",
+    HARVESTER = "harvester"
 }
 
 
@@ -42,11 +55,17 @@ export default class PreloadScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image(Images.SHIP, ship);
+        this.load.image(Images.CORVETTE, corvette);
         this.load.image(Images.WORMHOLE, wormhole);
         this.load.image(Images.HOUSE_ICON, structure_house);
         this.load.image(Images.FARM_ICON, structure_farm);
         this.load.image(Images.PLANET, planet00);
+        this.load.image(Images.FACTORY_ICON, factory_icon);
+        this.load.image(Images.HOME_ICON, home_icon);
+        this.load.image(Images.LAVA_PLANET, lava_planet);
+        this.load.image(Images.BAREN_PLANET, baren_planet);
+        this.load.image(Images.FABRICATOR, fabricator);
+        this.load.image(Images.HARVESTER, harvester);
         this.createLoadingGui();
         this.load.once("complete", () => {
             this.startGame();

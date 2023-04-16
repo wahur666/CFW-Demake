@@ -12,6 +12,9 @@ import cursor from "../assets/cursor.png";
 import {Navigation} from "../model/Navigation";
 import Pointer = Phaser.Input.Pointer;
 import Vector2 = Phaser.Math.Vector2;
+import {Corvette} from "../entity/units/Corvette";
+import {Harvester} from "../entity/units/Harvester";
+import {Fabricator} from "../entity/units/Fabricator";
 
 const edgeSize = 50; // define the size of the edge area that will trigger the camera movement
 const scrollSpeed = 10; // define the speed at which the camera will move
@@ -135,10 +138,12 @@ export default class GameScene extends Phaser.Scene {
         // const rect2 = this.add.rectangle(500, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
         // this.wh1 = new Wormhole(this, 260, 120);
         // this.wh2 = new Wormhole(this, 560, 120);
-        this.units.push(new Unit(this, 50, 50));
-        this.units.push(new Unit(this, 50, 70));
-        this.units.push(new Unit(this, 50, 90));
-        this.units.push(new Unit(this, 90, 30));
+        this.units.push(new Corvette(this, 50, 50));
+        this.units.push(new Corvette(this, 50, 70));
+        this.units.push(new Corvette(this, 50, 90));
+        this.units.push(new Corvette(this, 90, 30));
+        this.units.push(new Harvester(this, 90, 50));
+        this.units.push(new Fabricator(this, 90, 70));
         this.input.keyboard?.on("keyup-ESC", (ev) => {
             route("/", true);
         });
