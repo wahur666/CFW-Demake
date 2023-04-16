@@ -1,0 +1,8 @@
+dist
+public
+.vscode
+node_modules
+package.json
+package-lock.json
+README.md
+roadmap.md
