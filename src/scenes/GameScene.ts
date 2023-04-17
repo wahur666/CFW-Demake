@@ -15,9 +15,11 @@ import Vector2 = Phaser.Math.Vector2;
 import { Corvette } from "../entity/units/Corvette";
 import { Harvester } from "../entity/units/Harvester";
 import { Fabricator } from "../entity/units/Fabricator";
+import { GasResource } from "../entity/objects/GasResource";
+import { OreResource } from "../entity/objects/OreResource";
 
-const edgeSize = 50; // define the size of the edge area that will trigger the camera movement
-const scrollSpeed = 10; // define the speed at which the camera will move
+const edgeSize: number = 50; // define the size of the edge area that will trigger the camera movement
+const scrollSpeed: number = 10; // define the speed at which the camera will move
 
 export default class GameScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
@@ -35,6 +37,8 @@ export default class GameScene extends Phaser.Scene {
     private dragging = false;
     private dragStart: Vector2 | null = null;
     private navi: Navigation;
+    private gasObjects: GasResource[] = [];
+    private oreObjects: OreResource[] = [];
 
     constructor() {
         super(SceneRegistry.GAME);
@@ -148,6 +152,10 @@ export default class GameScene extends Phaser.Scene {
         this.units.push(new Corvette(this, 90, 30));
         this.units.push(new Harvester(this, 90, 50));
         this.units.push(new Fabricator(this, 90, 70));
+
+        this.gasObjects.push(new GasResource(this, 110, 110));
+        this.oreObjects.push(new OreResource(this, 130, 110));
+
         this.input.keyboard?.on("keyup-ESC", (ev) => {
             route("/", true);
         });
