@@ -115,7 +115,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
-        const size = 64;
+        const size = 128;
         this.input.setDefaultCursor(`url(${cursor}), default`);
         this.graphics = this.add.graphics();
         this.selectionRectGraphics = this.add.graphics();
@@ -200,8 +200,14 @@ export default class GameScene extends Phaser.Scene {
             if (ev.button === 0) {
                 if (this.dragStart) {
                     this.selectedUnits = [];
+                    /** Check if a bigh enough rect is selected, or just clicked
+                     * if there is a rect, check inside the rect
+                     * else we check if we clicked simply on a unit */
+                    const selectionFunction: (pos: Vector2) => boolean = this.dragStart.distance(this.getWorldPos(ev)) > 5
+                        ? (pos: Vector2) => inRect(pos, this.getWorldPos(ev), this.dragStart!)
+                        : (pos: Vector2) => pos.distance(this.getWorldPos(ev)) < 10;
                     for (const unit of this.units) {
-                        unit.setSelected(inRect(unit.pos, this.getWorldPos(ev), this.dragStart));
+                        unit.setSelected(selectionFunction(unit.pos));
                         if (unit.isSelected) {
                             this.selectedUnits.push(unit);
                         }
