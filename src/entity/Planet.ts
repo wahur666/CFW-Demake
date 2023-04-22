@@ -2,19 +2,28 @@ import GameScene from "../scenes/GameScene";
 import { d2r } from "../helpers/utils";
 import Building from "./Building";
 
+const enum SlotStatus {
+    FREE,
+    OCCUPIED
+}
+
 export default class Planet extends Phaser.GameObjects.Sprite {
-    radius = 130;
+    radius = Math.round(this.width * this.scale / 2);
     graphics: Phaser.GameObjects.Graphics;
     showBuildRings = true;
 
     buildings: Building[] = [];
 
-    slots = Array(12).fill(0);
+    slots: SlotStatus[] = Array(12).fill(SlotStatus.FREE);
 
     constructor(scene: GameScene, x: number, y: number, texture: string) {
         super(scene, x, y, texture);
         this.scene.add.existing(this);
         this.graphics = this.scene.add.graphics();
+        this.setScale(0.3);
+        this.radius = Math.round(this.width * this.scale / 2);
+
+        console.log("planet radius", this.radius)
     }
 
     update(delta: number) {
@@ -34,12 +43,12 @@ export default class Planet extends Phaser.GameObjects.Sprite {
 
     buildBuilding(building: Building, ...slots: number[]): boolean {
         for (const slot of slots) {
-            if (this.slots[slot] === 1) {
+            if (this.slots[slot] === SlotStatus.OCCUPIED) {
                 return false;
             }
         }
         for (const slot of slots) {
-            this.slots[slot] = 1;
+            this.slots[slot] = SlotStatus.OCCUPIED;
         }
         this.buildings.push(building.clone());
         return true;

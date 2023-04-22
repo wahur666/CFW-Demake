@@ -17,6 +17,7 @@ import { Harvester } from "../entity/units/Harvester";
 import { Fabricator } from "../entity/units/Fabricator";
 import { GasResource } from "../entity/objects/GasResource";
 import { OreResource } from "../entity/objects/OreResource";
+import {Images} from "./PreloadScene";
 
 const edgeSize: number = 50; // define the size of the edge area that will trigger the camera movement
 const scrollSpeed: number = 10; // define the speed at which the camera will move
@@ -276,16 +277,17 @@ export default class GameScene extends Phaser.Scene {
 
         this.input.on("pointermove", (ev: Pointer) => {
             if (this.building) {
-                const distance = Phaser.Math.Distance.Between(ev.x, ev.y, this.planet.x, this.planet.y);
+                const npos = this.getWorldPos(ev)
+                const distance = Phaser.Math.Distance.Between(npos.x, npos.y, this.planet.x, this.planet.y);
                 if (Math.abs(distance - this.planet.radius) < 20) {
                     this.building.unBound = false;
                     this.building.nearPlanet = this.planet;
-                    const loc = this.building.calculatePlace(this.planet, ev.x, ev.y);
+                    const loc = this.building.calculatePlace(this.planet, npos.x, npos.y);
                     console.log("loc", loc);
                 } else {
                     this.building.unBound = true;
                     this.building.nearPlanet = null;
-                    this.building.setPosition(ev.x, ev.y);
+                    this.building.setPosition(npos.x, npos.y);
                 }
             }
             if (this.dragging) {
@@ -293,8 +295,8 @@ export default class GameScene extends Phaser.Scene {
             }
         });
 
-        // this.planet = new Planet(this, 500, 500, Images.PLANET);
-        // this.building = new Building(this, 500, 500, Images.HOUSE_ICON);
+        this.planet = new Planet(this, 80, 160, Images.PLANET);
+        this.building = new Building(this, 500, 500, Images.HOUSE_ICON);
     }
 
     calcSquare(x: number, y: number): [number, number] {

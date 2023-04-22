@@ -8,9 +8,9 @@ export default class Building extends Phaser.GameObjects.Sprite {
     radiusVisible = false;
     graphics: Phaser.GameObjects.Graphics;
     currentRadiusRotation = 0;
-    radius = 130;
+    radius = 38;
     unBound = false;
-    imageScale = 0.3;
+    imageScale = 0.1;
     place = 1;
     wide = 2;
     baseAngle = d2r(30);
@@ -48,6 +48,7 @@ export default class Building extends Phaser.GameObjects.Sprite {
             );
             this.graphics.lineBetween(start.x, start.y, end.x, end.y);
         }
+        this.graphics.fillStyle(0x000000, 0.5);
         this.graphics.fillRect(
             this.x - (this.width / 2) * this.imageScale,
             this.y - (this.height / 2) * this.imageScale,
