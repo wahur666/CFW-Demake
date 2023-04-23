@@ -1,6 +1,7 @@
 import { SupportUnit } from "./SupportUnit";
 import Phaser from "phaser";
 import { Images } from "../../scenes/PreloadScene";
+import Vector2 = Phaser.Math.Vector2;
 
 enum PayloadType {
     ORE,
@@ -12,8 +13,8 @@ export class Harvester extends SupportUnit {
     capacity: number;
     payload: PayloadType;
 
-    constructor(scene: Phaser.Scene, x: number, y: number) {
-        super(scene, x, y, Images.HARVESTER);
+    constructor(scene: Phaser.Scene, position: Vector2) {
+        super(scene, position.x, position.y, Images.HARVESTER);
         this.flipY = true;
     }
 

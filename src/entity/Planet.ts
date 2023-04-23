@@ -1,6 +1,7 @@
 import GameScene from "../scenes/GameScene";
-import { d2r } from "../helpers/utils";
+import {d2r, GAME_SCALE, halfDrawWidth} from "../helpers/utils";
 import Building from "./Building";
+import Vector2 = Phaser.Math.Vector2;
 
 const enum SlotStatus {
     FREE,
@@ -16,11 +17,11 @@ export default class Planet extends Phaser.GameObjects.Sprite {
 
     slots: SlotStatus[] = Array(12).fill(SlotStatus.FREE);
 
-    constructor(scene: GameScene, x: number, y: number, texture: string) {
-        super(scene, x, y, texture);
+    constructor(scene: GameScene, position: Vector2, texture: string) {
+        super(scene, position.x - halfDrawWidth, position.y - halfDrawWidth, texture);
         this.scene.add.existing(this);
         this.graphics = this.scene.add.graphics();
-        this.setScale(0.3);
+        this.setScale(0.3 * GAME_SCALE);
         this.radius = Math.round(this.width * this.scale / 2);
 
         console.log("planet radius", this.radius)

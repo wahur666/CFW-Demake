@@ -2,7 +2,7 @@ import { Images } from "../scenes/PreloadScene";
 import { GameNode } from "../model/GameMap/GameMap";
 import Vector2 = Phaser.Math.Vector2;
 import { Signal, computed, signal } from "@preact/signals";
-import { nodeToPos } from "../helpers/utils";
+import {GAME_SCALE, nodeToPos} from "../helpers/utils";
 import GameScene from "../scenes/GameScene";
 
 export enum TravelState {
@@ -28,7 +28,7 @@ export default abstract class Unit extends Phaser.Physics.Arcade.Sprite {
         super(scene, x, y, texture);
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
-        this.setScale(0.2);
+        this.setScale(0.2 * GAME_SCALE);
         this.selectedGraphics = this.scene.add.graphics();
         this.gameScene = scene as GameScene;
     }

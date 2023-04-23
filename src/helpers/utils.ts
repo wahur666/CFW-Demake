@@ -7,11 +7,12 @@ export const range = (num: number): number[] => [...Array(num).keys()];
 /** Converts Vector2 to [x, y] */
 export const vec2ToArray = (p: Vector2): [number, number] => [p.x, p.y];
 
-export const drawWidth = 20;
-export const halfWidth = drawWidth / 2;
-export const calculateRect = (width: number) => width * 20;
+export const GAME_SCALE: number = 2;
+export const drawWidth = 20 * GAME_SCALE;
+export const halfDrawWidth = drawWidth / 2;
+export const calculateRect = (width: number) => width * drawWidth;
 export const nodeToPos = (node: GameNode) =>
-    node.position.clone().multiply({ x: drawWidth, y: drawWidth }).add({ x: halfWidth, y: halfWidth });
+    node.position.clone().multiply({ x: drawWidth, y: drawWidth }).add({ x: halfDrawWidth, y: halfDrawWidth });
 export const posToNodeCoords = (pos: Vector2) => [Math.floor(pos.x / drawWidth), Math.floor(pos.y / drawWidth)];
 export const getRandomInt = (max: number): number => Math.floor(Math.random() * max);
 export const toVec2 = (arr: number[]): Vector2 => new Vector2(arr[0], arr[1]);

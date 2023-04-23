@@ -1,6 +1,7 @@
 import GameScene from "../scenes/GameScene";
-import Vector2 = Phaser.Math.Vector2;
 import Planet from "./Planet";
+import {GAME_SCALE} from "../helpers/utils";
+import Vector2 = Phaser.Math.Vector2;
 
 const d2r = Phaser.Math.DegToRad;
 
@@ -8,9 +9,9 @@ export default class Building extends Phaser.GameObjects.Sprite {
     radiusVisible = false;
     graphics: Phaser.GameObjects.Graphics;
     currentRadiusRotation = 0;
-    radius = 38;
+    radius = 38 * GAME_SCALE; // This is calculated by printing out the planet radius value
     unBound = false;
-    imageScale = 0.1;
+    imageScale = 0.1 * GAME_SCALE;
     place = 1;
     wide = 2;
     baseAngle = d2r(30);
@@ -18,8 +19,8 @@ export default class Building extends Phaser.GameObjects.Sprite {
     hoverPos: number[] = [];
     textureName: string;
 
-    constructor(scene: GameScene, x: number, y: number, textureName: string) {
-        super(scene, x, y, textureName);
+    constructor(scene: GameScene, position: Vector2, textureName: string) {
+        super(scene, position.x, position.y, textureName);
         this.textureName = textureName;
         this.graphics = this.scene.add.graphics();
         this.scene.add.existing(this);
@@ -117,7 +118,7 @@ export default class Building extends Phaser.GameObjects.Sprite {
     }
 
     clone(): Building {
-        const building = new Building(this.scene as GameScene, this.x, this.y, this.textureName);
+        const building = new Building(this.scene as GameScene, new Vector2(this.x, this.y), this.textureName);
         building.wide = this.wide;
         building.place = this.place;
         return building;

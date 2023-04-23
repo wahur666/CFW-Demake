@@ -7,7 +7,16 @@ import { route } from "preact-router";
 import Building from "../entity/Building";
 import Planet from "../entity/Planet";
 import GameMap from "../model/GameMap/GameMap";
-import { calculateRect, drawWidth, getRandomInt, inRect, posToNodeCoords, toVec2 } from "../helpers/utils";
+import {
+    calculateRect,
+    drawWidth,
+    GAME_SCALE,
+    getRandomInt,
+    inRect,
+    nodeToPos,
+    posToNodeCoords,
+    toVec2
+} from "../helpers/utils";
 import cursor from "../assets/cursor.png";
 import { Navigation } from "../model/Navigation";
 import Pointer = Phaser.Input.Pointer;
@@ -17,7 +26,7 @@ import { Harvester } from "../entity/units/Harvester";
 import { Fabricator } from "../entity/units/Fabricator";
 import { GasResource } from "../entity/objects/GasResource";
 import { OreResource } from "../entity/objects/OreResource";
-import {Images} from "./PreloadScene";
+import { Images } from "./PreloadScene";
 
 const edgeSize: number = 50; // define the size of the edge area that will trigger the camera movement
 const scrollSpeed: number = 10; // define the speed at which the camera will move
@@ -134,29 +143,33 @@ export default class GameScene extends Phaser.Scene {
         this.graphics.strokeRect(0, 0, 2000, 2000);
         this.graphics.strokeCircle(1000, 1000, 1100);
         for (const wormhole of this.map.wormholes) {
-            const x1 = calculateRect(wormhole.node1.position.x) + drawWidth / 2;
-            const y1 = calculateRect(wormhole.node1.position.y) + drawWidth / 2;
-            this.wormholes.push(new Wormhole(this, x1, y1));
-            const x2 = calculateRect(wormhole.node2.position.x) + drawWidth / 2;
-            const y2 = calculateRect(wormhole.node2.position.y) + drawWidth / 2;
-            this.wormholes.push(new Wormhole(this, x2, y2));
+            const v1 = nodeToPos(wormhole.node1);
+            this.wormholes.push(new Wormhole(this, v1.x, v1.y));
+            const v2 = nodeToPos(wormhole.node2);
+            this.wormholes.push(new Wormhole(this, v2.x, v2.y));
         }
 
         // this.input.mouse.disableContextMenu();
-        // const rect1 = this.add.rectangle(10, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
-        // const rect2 = this.add.rectangle(500, 10, 300, 300, 0xa1a1a1).setOrigin(0, 0);
-        // this.wh1 = new Wormhole(this, 260, 120);
-        // this.wh2 = new Wormhole(this, 560, 120);
-        this.units.push(new Corvette(this, 50, 50));
-        this.units.push(new Corvette(this, 50, 70));
-        this.units.push(new Corvette(this, 50, 90));
-        this.units.push(new Corvette(this, 90, 30));
-        this.units.push(new Harvester(this, 90, 50));
-        this.units.push(new Fabricator(this, 90, 70));
 
-        this.gasObjects.push(new GasResource(this, 110, 110));
-        this.oreObjects.push(new OreResource(this, 130, 110));
+        this.units.push(new Corvette(this, nodeToPos(this.map.getNode(2, 2))));
+        this.units.push(new Corvette(this, nodeToPos(this.map.getNode(2, 3))));
+        this.units.push(new Corvette(this, nodeToPos(this.map.getNode(2, 4))));
+        this.units.push(new Corvette(this, nodeToPos(this.map.getNode(4, 1))));
+        this.units.push(new Harvester(this, nodeToPos(this.map.getNode(4, 2))));
+        this.units.push(new Fabricator(this, nodeToPos(this.map.getNode(4, 3))));
 
+        this.gasObjects.push(new GasResource(this, nodeToPos(this.map.getNode(5, 5))));
+        this.oreObjects.push(new OreResource(this, nodeToPos(this.map.getNode(6, 5))));
+
+
+        this.planet = new Planet(this, nodeToPos(this.map.getNode(4, 8)), Images.PLANET);
+        const pointerWorldLoc = this.getWorldPos(this.input.activePointer);
+        this.building = new Building(this, pointerWorldLoc, Images.HOUSE_ICON);
+
+        this.setupEventHandlers();
+    }
+
+    private setupEventHandlers() {
         this.input.keyboard?.on("keyup-ESC", (ev) => {
             route("/", true);
         });
@@ -204,9 +217,10 @@ export default class GameScene extends Phaser.Scene {
                     /** Check if a bigh enough rect is selected, or just clicked
                      * if there is a rect, check inside the rect
                      * else we check if we clicked simply on a unit */
-                    const selectionFunction: (pos: Vector2) => boolean = this.dragStart.distance(this.getWorldPos(ev)) > 5
-                        ? (pos: Vector2) => inRect(pos, this.getWorldPos(ev), this.dragStart!)
-                        : (pos: Vector2) => pos.distance(this.getWorldPos(ev)) < 10;
+                    const selectionFunction: (pos: Vector2) => boolean =
+                        this.dragStart.distance(this.getWorldPos(ev)) > 5
+                            ? (pos: Vector2) => inRect(pos, this.getWorldPos(ev), this.dragStart!)
+                            : (pos: Vector2) => pos.distance(this.getWorldPos(ev)) < 10 * GAME_SCALE;
                     for (const unit of this.units) {
                         unit.setSelected(selectionFunction(unit.pos));
                         if (unit.isSelected) {
@@ -277,7 +291,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.input.on("pointermove", (ev: Pointer) => {
             if (this.building) {
-                const npos = this.getWorldPos(ev)
+                const npos = this.getWorldPos(ev);
                 const distance = Phaser.Math.Distance.Between(npos.x, npos.y, this.planet.x, this.planet.y);
                 if (Math.abs(distance - this.planet.radius) < 20) {
                     this.building.unBound = false;
@@ -294,9 +308,6 @@ export default class GameScene extends Phaser.Scene {
                 this.drawSelectionRect(this.getWorldPos(ev));
             }
         });
-
-        this.planet = new Planet(this, 80, 160, Images.PLANET);
-        this.building = new Building(this, 500, 500, Images.HOUSE_ICON);
     }
 
     calcSquare(x: number, y: number): [number, number] {
