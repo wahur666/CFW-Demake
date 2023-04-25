@@ -27,6 +27,7 @@ import { Fabricator } from "../entity/units/Fabricator";
 import { GasResource } from "../entity/objects/GasResource";
 import { OreResource } from "../entity/objects/OreResource";
 import { Images } from "./PreloadScene";
+import {UIScene} from "./UiScene";
 
 const edgeSize: number = 50; // define the size of the edge area that will trigger the camera movement
 const scrollSpeed: number = 10; // define the speed at which the camera will move
@@ -49,6 +50,7 @@ export default class GameScene extends Phaser.Scene {
     private navi: Navigation;
     private gasObjects: GasResource[] = [];
     private oreObjects: OreResource[] = [];
+    private uiScene: UIScene;
 
     constructor() {
         super(SceneRegistry.GAME);
@@ -165,7 +167,10 @@ export default class GameScene extends Phaser.Scene {
         this.planet = new Planet(this, nodeToPos(this.map.getNode(4, 8)), Images.PLANET);
         const pointerWorldLoc = this.getWorldPos(this.input.activePointer);
         this.building = new Building(this, pointerWorldLoc, Images.HOUSE_ICON);
+        this.uiScene = new UIScene();
 
+        // Add the UI scene to the game
+        this.scene.add("uiScene", this.uiScene, true);
         this.setupEventHandlers();
     }
 
@@ -173,6 +178,10 @@ export default class GameScene extends Phaser.Scene {
         this.input.keyboard?.on("keyup-ESC", (ev) => {
             route("/", true);
         });
+
+        this.input.keyboard?.on("keyup-U", (ev) => {
+            this.uiScene.setScore();
+        })
 
         this.input.on("pointerdown", (ev: Pointer) => {
             console.log(ev.button);
