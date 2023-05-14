@@ -166,7 +166,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.planet = new Planet(this, nodeToPos(this.map.getNode(4, 8)), Images.PLANET);
         const pointerWorldLoc = this.getWorldPos(this.input.activePointer);
-        this.building = new Building(this, pointerWorldLoc, Images.HOUSE_ICON);
+        this.building = new Building(this, pointerWorldLoc, Images.HQ_ICON);
         this.uiScene = new UIScene();
 
         // Add the UI scene to the game

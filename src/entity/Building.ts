@@ -11,7 +11,7 @@ export default class Building extends Phaser.GameObjects.Sprite {
     currentRadiusRotation = 0;
     radius = 38 * GAME_SCALE; // This is calculated by printing out the planet radius value
     unBound = false;
-    imageScale = 0.1 * GAME_SCALE;
+    imageScale = 0.3 * GAME_SCALE;
     place = 1;
     wide = 2;
     baseAngle = d2r(30);

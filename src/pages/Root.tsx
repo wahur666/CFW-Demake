@@ -2,6 +2,7 @@ import { ArwesThemeProvider, Button, StylesBaseline, Text } from "@arwes/core";
 import "../app.scss";
 import { route } from "preact-router";
 import { PageRoutes } from "./routes";
+import {isElectron} from "../utils/helper";
 const FONT_FAMILY_ROOT = '"Titillium Web", sans-serif';
 
 export default function Root({ path: string }) {
@@ -26,6 +27,9 @@ export default function Root({ path: string }) {
                     <div className={"flex justify-center"}>
                         <Text as={"h6"}>- Demake - </Text>
                     </div>
+                    {isElectron() && <div className={"flex justify-center"}>
+                        <Text as={"small"}>Electron</Text>
+                    </div>}
                 </div>
 
                 <div className={"flex flex-col items-center"}>

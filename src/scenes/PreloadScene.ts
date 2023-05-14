@@ -1,3 +1,4 @@
+/* eslint-disable camelcase*/
 import * as Phaser from "phaser";
 import { SceneRegistry } from "./SceneRegistry";
 import { defaultFont } from "../helpers/utils";
@@ -14,6 +15,10 @@ import lava_planet from "../assets/Lava.png";
 import baren_planet from "../assets/Baren.png";
 import fabricator from "../assets/enemyBlack3.png";
 import harvester from "../assets/enemyBlack4.png";
+import hq_icon from "../assets/hq-icon.png";
+import light_shipyard_icon from "../assets/light-shipyard-icon.png";
+import refinery_icon from "../assets/refinery-icon.png";
+import sensor_tower_icon from "../assets/sensor-tower-icon.png";
 
 export enum Images {
     HOUSE_ICON = "house-icon",
@@ -27,6 +32,10 @@ export enum Images {
     BAREN_PLANET = "baren-planet",
     FABRICATOR = "fabricator",
     HARVESTER = "harvester",
+    HQ_ICON = "hq-icon",
+    LIGHT_SHIPYARD_ICON = "light-shipyard-icon",
+    REFINERY_ICON = "refinery-icon",
+    SENSOR_TOWER_ICON = "sensor-tower-icon",
 }
 
 export default class PreloadScene extends Phaser.Scene {
@@ -64,6 +73,10 @@ export default class PreloadScene extends Phaser.Scene {
         this.load.image(Images.BAREN_PLANET, baren_planet);
         this.load.image(Images.FABRICATOR, fabricator);
         this.load.image(Images.HARVESTER, harvester);
+        this.load.image(Images.HQ_ICON, hq_icon);
+        this.load.image(Images.REFINERY_ICON, refinery_icon);
+        this.load.image(Images.LIGHT_SHIPYARD_ICON, light_shipyard_icon);
+        this.load.image(Images.SENSOR_TOWER_ICON, sensor_tower_icon);
         this.createLoadingGui();
         this.load.once("complete", () => {
             this.startGame();
