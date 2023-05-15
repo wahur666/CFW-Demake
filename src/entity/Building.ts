@@ -1,6 +1,6 @@
 import GameScene from "../scenes/GameScene";
 import Planet from "./Planet";
-import {GAME_SCALE} from "../helpers/utils";
+import { GAME_SCALE } from "../helpers/utils";
 import Vector2 = Phaser.Math.Vector2;
 
 const d2r = Phaser.Math.DegToRad;

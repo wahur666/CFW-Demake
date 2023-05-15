@@ -7,16 +7,7 @@ import { route } from "preact-router";
 import Building from "../entity/Building";
 import Planet from "../entity/Planet";
 import GameMap from "../model/GameMap/GameMap";
-import {
-    calculateRect,
-    drawWidth,
-    GAME_SCALE,
-    getRandomInt,
-    inRect,
-    nodeToPos,
-    posToNodeCoords,
-    toVec2
-} from "../helpers/utils";
+import { calculateRect, drawWidth, GAME_SCALE, getRandomInt, inRect, nodeToPos, posToNodeCoords, toVec2 } from "../helpers/utils";
 import cursor from "../assets/cursor.png";
 import { Navigation } from "../model/Navigation";
 import Pointer = Phaser.Input.Pointer;
@@ -27,7 +18,7 @@ import { Fabricator } from "../entity/units/Fabricator";
 import { GasResource } from "../entity/objects/GasResource";
 import { OreResource } from "../entity/objects/OreResource";
 import { Images } from "./PreloadScene";
-import {UIScene} from "./UiScene";
+import { UIScene } from "./UiScene";
 
 const edgeSize: number = 50; // define the size of the edge area that will trigger the camera movement
 const scrollSpeed: number = 10; // define the speed at which the camera will move
@@ -163,7 +154,6 @@ export default class GameScene extends Phaser.Scene {
         this.gasObjects.push(new GasResource(this, nodeToPos(this.map.getNode(5, 5))));
         this.oreObjects.push(new OreResource(this, nodeToPos(this.map.getNode(6, 5))));
 
-
         this.planet = new Planet(this, nodeToPos(this.map.getNode(4, 8)), Images.PLANET);
         const pointerWorldLoc = this.getWorldPos(this.input.activePointer);
         this.building = new Building(this, pointerWorldLoc, Images.HQ_ICON);
@@ -181,7 +171,7 @@ export default class GameScene extends Phaser.Scene {
 
         this.input.keyboard?.on("keyup-U", (ev) => {
             this.uiScene.setScore();
-        })
+        });
 
         this.input.on("pointerdown", (ev: Pointer) => {
             console.log(ev.button);

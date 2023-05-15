@@ -17,7 +17,7 @@ module.exports = {
         camelcase: "error",
         quotes: ["error", "double"],
         "no-duplicate-imports": "error",
-        "@typescript-eslint/no-inferrable-types": 0
+        "@typescript-eslint/no-inferrable-types": 0,
     },
     settings: {
         "import/resolver": {

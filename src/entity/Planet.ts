@@ -1,15 +1,15 @@
 import GameScene from "../scenes/GameScene";
-import {d2r, GAME_SCALE, halfDrawWidth} from "../helpers/utils";
+import { d2r, GAME_SCALE, halfDrawWidth } from "../helpers/utils";
 import Building from "./Building";
 import Vector2 = Phaser.Math.Vector2;
 
 const enum SlotStatus {
     FREE,
-    OCCUPIED
+    OCCUPIED,
 }
 
 export default class Planet extends Phaser.GameObjects.Sprite {
-    radius = Math.round(this.width * this.scale / 2);
+    radius = Math.round((this.width * this.scale) / 2);
     graphics: Phaser.GameObjects.Graphics;
     showBuildRings = true;
 
@@ -22,9 +22,9 @@ export default class Planet extends Phaser.GameObjects.Sprite {
         this.scene.add.existing(this);
         this.graphics = this.scene.add.graphics();
         this.setScale(0.3 * GAME_SCALE);
-        this.radius = Math.round(this.width * this.scale / 2);
+        this.radius = Math.round((this.width * this.scale) / 2);
 
-        console.log("planet radius", this.radius)
+        console.log("planet radius", this.radius);
     }
 
     update(delta: number) {

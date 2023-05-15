@@ -1,6 +1,6 @@
 import { Images } from "../scenes/PreloadScene";
 import Vector2 = Phaser.Math.Vector2;
-import {GAME_SCALE} from "../helpers/utils";
+import { GAME_SCALE } from "../helpers/utils";
 
 export default class Wormhole extends Phaser.GameObjects.Sprite {
     constructor(scene: Phaser.Scene, x: number, y: number) {

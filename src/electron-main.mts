@@ -1,12 +1,12 @@
-import {app, BrowserWindow} from "electron";
+import { app, BrowserWindow } from "electron";
 import path from "node:path";
-import {fileURLToPath} from "node:url";
+import { fileURLToPath } from "node:url";
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 import electronSquirrelStartup from "electron-squirrel-startup";
 
 declare global {
-    let MAIN_WINDOW_VITE_DEV_SERVER_URL: string
-    let MAIN_WINDOW_VITE_NAME: string
+    let MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
+    let MAIN_WINDOW_VITE_NAME: string;
 }
 
 const __filename = fileURLToPath(import.meta.url);

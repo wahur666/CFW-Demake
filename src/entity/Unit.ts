@@ -2,7 +2,7 @@ import { Images } from "../scenes/PreloadScene";
 import { GameNode } from "../model/GameMap/GameMap";
 import Vector2 = Phaser.Math.Vector2;
 import { Signal, computed, signal } from "@preact/signals";
-import {GAME_SCALE, nodeToPos} from "../helpers/utils";
+import { GAME_SCALE, nodeToPos } from "../helpers/utils";
 import GameScene from "../scenes/GameScene";
 
 export enum TravelState {

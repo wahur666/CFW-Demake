@@ -1,7 +1,7 @@
 import "preact/debug";
 import { render } from "preact";
 import Router from "preact-router";
-import { createHashHistory } from 'history';
+import { createHashHistory } from "history";
 
 import Editor from "./pages/Editor";
 import Game from "./pages/Game";
@@ -14,7 +14,7 @@ import "./style.scss";
 import PathFindingTest from "./pages/PathFindingTest";
 import PathFindingTest2 from "./pages/PathFindingTest2";
 render(
-// @ts-ignore
+    // @ts-ignore
     <Router history={createHashHistory()}>
         <Root path={PageRoutes.ROOT} />
         <Editor path={PageRoutes.EDITOR} />
