@@ -4,16 +4,14 @@ import LobbySettings from "../components/Lobby/LobbySettings";
 import LobbyControl from "../components/Lobby/LobbyControl";
 import LobbyChat from "../components/Lobby/LobbyChat";
 import LobbyPlayers from "../components/Lobby/LobbyPlayers";
-import { useLayoutEffect, useRef } from "preact/hooks";
+import { useRef } from "preact/hooks";
 import { useRescale } from "../utils/custom.hooks";
 
-interface LobbyProps {
-    path: string;
-}
 
+/* eslint-disable-next-line */
 const FONT_FAMILY_ROOT = '"Titillium Web", sans-serif';
 
-export default function Lobby(props: LobbyProps) {
+export default function Lobby() {
     const aRef = useRef<HTMLDivElement>(null);
     useRescale(aRef, 0.95);
 

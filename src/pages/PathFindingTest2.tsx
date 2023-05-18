@@ -1,50 +1,38 @@
 import Phaser from "phaser";
-import { Component, ComponentChild, createRef, RenderableProps } from "preact";
 
 import { SHARED_CONFIG } from "../model/config";
 import ScaleModes = Phaser.Scale.ScaleModes;
 import PathfindingTestScene2 from "../scenes/PathfindingTestScene2";
+import { useEffect, useRef } from "preact/hooks";
 
-interface IProps {}
-interface IState {}
-export default class PathFindingTest2 extends Component<IProps, IState> {
-    game: Phaser.Game;
-
-    canvas = createRef<HTMLCanvasElement>();
-
-    config: Phaser.Types.Core.GameConfig & typeof SHARED_CONFIG = {
-        ...SHARED_CONFIG,
-        type: Phaser.WEBGL,
-        scene: [PathfindingTestScene2],
-        scale: {
-            mode: ScaleModes.RESIZE,
+const config: Phaser.Types.Core.GameConfig & typeof SHARED_CONFIG = {
+    ...SHARED_CONFIG,
+    type: Phaser.WEBGL,
+    scene: [PathfindingTestScene2],
+    scale: {
+        mode: ScaleModes.RESIZE,
+    },
+    backgroundColor: "#021114",
+    render: {
+        pixelArt: true,
+    },
+    disableContextMenu: true,
+    physics: {
+        default: "arcade",
+        arcade: {
+            debug: SHARED_CONFIG.debug.arcade,
         },
-        backgroundColor: "#021114",
-        render: {
-            pixelArt: true,
-        },
-        disableContextMenu: true,
-        physics: {
-            default: "arcade",
-            arcade: {
-                debug: SHARED_CONFIG.debug.arcade,
-            },
-        },
-    };
+    },
+};
 
-    constructor(props: IProps, context: any) {
-        super(props, context);
-    }
+export default function PathFindingTest2() {
+    let game: Phaser.Game;
+    const canvas = useRef<HTMLCanvasElement>(null);
 
-    componentDidMount() {
-        this.game = new Phaser.Game({ ...this.config, canvas: this.canvas.current! });
-    }
+    useEffect(() => {
+        game = new Phaser.Game({ ...config, canvas: canvas.current! });
+        return () => game.destroy(true, false);
+    }, []);
 
-    componentWillUnmount() {
-        this.game.destroy(true, false);
-    }
-
-    render(props?: RenderableProps<IProps>, state?: Readonly<IState>): ComponentChild {
-        return <canvas id={"cv1"} ref={this.canvas} />;
-    }
+    return <canvas id={"cv1"} ref={canvas} />;
 }

@@ -4,7 +4,6 @@ import { Images } from "./PreloadScene";
 export class UIScene extends Phaser.Scene {
     scoreText: Phaser.GameObjects.Text;
     counter = 0;
-    background: Phaser.GameObjects.Graphics;
     backgroundRect: Phaser.GameObjects.Rectangle;
 
     constructor() {
@@ -15,12 +14,14 @@ export class UIScene extends Phaser.Scene {
         const [w, h] = [this.game.canvas.width, this.game.canvas.height];
         console.log("canvas", w, h);
         console.log(this.game.config);
-        this.background = this.add.graphics();
 
         this.backgroundRect = this.add.rectangle(0, h, 300, 200, 0x0a12fa, 1);
         this.backgroundRect.setOrigin(0, 1);
+        this.backgroundRect.setInteractive()
 
-        const a = new IconButton(this, 50, 50, Images.HQ_ICON);
+        const a = new IconButton(this, 50, h - 150, Images.HQ_ICON);
+        const b = new IconButton(this, 50 + a.width + 5, h - 150, Images.REFINERY_ICON);
+        const c = new IconButton(this, 50 + a.width + b.width + 10, h - 150, Images.LIGHT_SHIPYARD_ICON);
         // Add your UI elements to this scene
         this.scoreText = this.add
             .text(w, h, `Score: ${this.counter}`, {
@@ -38,7 +39,7 @@ export class UIScene extends Phaser.Scene {
             this.backgroundRect.y = h;
         });
 
-        this.background.on("pointerdown", () => {
+        this.backgroundRect.on("pointerdown", () => {
             console.log("fuck you");
         });
 

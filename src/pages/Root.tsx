@@ -6,14 +6,15 @@ import { isElectron } from "../utils/helper";
 import { useRef } from "preact/hooks";
 import { useRescale } from "../utils/custom.hooks";
 
+/* eslint-disable-next-line */
 const FONT_FAMILY_ROOT = '"Titillium Web", sans-serif';
 
-export default function Root({ path: string }) {
-    const gotoGame = (event) => route(PageRoutes.GAME, true);
-    const gotoLobby = (event) => route(PageRoutes.LOBBY, true);
-    const goToEditor = (event) => route(PageRoutes.EDITOR, true);
-    const gotoPathfinding = (event) => route(PageRoutes.PATHFINDING_TEST, true);
-    const gotoPathfinding2 = (event) => route(PageRoutes.PATHFINDING2_TEST, true);
+export default function Root() {
+    const gotoGame = () => route(PageRoutes.GAME, true);
+    const gotoLobby = () => route(PageRoutes.LOBBY, true);
+    const goToEditor = () => route(PageRoutes.EDITOR, true);
+    const gotoPathfinding = () => route(PageRoutes.PATHFINDING_TEST, true);
+    const gotoPathfinding2 = () => route(PageRoutes.PATHFINDING2_TEST, true);
 
     const aRef = useRef<HTMLDivElement>(null);
     useRescale(aRef, 0.85);
