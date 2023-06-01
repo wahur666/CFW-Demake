@@ -7,7 +7,6 @@ import LobbyPlayers from "../components/Lobby/LobbyPlayers";
 import { useRef } from "preact/hooks";
 import { useRescale } from "../utils/custom.hooks";
 
-
 /* eslint-disable-next-line */
 const FONT_FAMILY_ROOT = '"Titillium Web", sans-serif';
 

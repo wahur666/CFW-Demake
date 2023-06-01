@@ -1,14 +1,13 @@
 import Phaser from "phaser";
 import { SHARED_CONFIG } from "../model/config";
 import { SceneRegistry } from "./SceneRegistry";
-import {dir2int, dir2int2, GridController, Layer, UnitController} from "../model/FlowField.ts";
+import { dir2int, dir2int2, GridController, Layer, UnitController } from "../model/FlowField.ts";
 import { nullMatrix } from "../helpers/utils.ts";
 import flow_icons from "../assets/Sprite-0002.png";
 import corvette from "../assets/playerShip1_blue.png";
 import Vector2 = Phaser.Math.Vector2;
 import Pointer = Phaser.Input.Pointer;
-import {Images} from "./PreloadScene.ts";
-
+import { Images } from "./PreloadScene.ts";
 
 export default class PathfindingTestScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
@@ -154,4 +153,3 @@ export default class PathfindingTestScene extends Phaser.Scene {
         }
     }
 }
-

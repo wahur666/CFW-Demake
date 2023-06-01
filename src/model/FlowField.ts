@@ -1,7 +1,7 @@
 import { nullMatrix, toVec2 } from "../helpers/utils.ts";
 import Unit from "../entity/Unit.ts";
 import Phaser from "phaser";
-import {Corvette} from "../entity/units/Corvette.ts";
+import { Corvette } from "../entity/units/Corvette.ts";
 import Vector2 = Phaser.Math.Vector2;
 
 enum Direction {
@@ -97,7 +97,6 @@ export function dir2int2(dir: Direction): number {
     }
 }
 
-
 function vec2toDirection(pos: Vector2): Direction | undefined {
     return directionMap.get(hashVec2(pos));
 }
@@ -130,7 +129,6 @@ export class Cell {
     increaseConst(amount: number) {
         this.cost = Math.min(255, this.cost + amount);
     }
-
 }
 
 export class FlowField {
@@ -203,7 +201,7 @@ export class FlowField {
     createFlowField() {
         for (const curCell of this.grid.flat()) {
             if (!curCell) return;
-            console.log("y")
+            console.log("y");
             const curNeighbours = this.getNeighbourCells(curCell.gridIndex, directions);
             let bestCost = curCell.bestCost;
 
@@ -305,7 +303,6 @@ export class UnitController {
 
     private unitsInGame: Unit[] = [];
 
-
     constructor(scene: Phaser.Scene, gridController: GridController) {
         this.gridController = gridController;
         this.unit = new Corvette(scene, new Vector2(50, 50));
@@ -324,7 +321,4 @@ export class UnitController {
             this.unit.body?.stop();
         }
     }
-
-
-
 }

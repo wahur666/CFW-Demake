@@ -1,9 +1,7 @@
 import System from "../System";
 import Building from "../../entity/Building";
 
-
 export default abstract class Player {
-
     protected currentOre: number = 0;
     protected maxOre: number = 2000;
 
@@ -22,5 +20,4 @@ export default abstract class Player {
         this.index = index;
         this.system = system;
     }
-
 }
