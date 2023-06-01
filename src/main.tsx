@@ -1,6 +1,6 @@
 import "preact/debug";
 import { render } from "preact";
-import Router, {Route} from "preact-router";
+import Router, { Route } from "preact-router";
 import { createHashHistory } from "history";
 
 import Editor from "./pages/Editor";

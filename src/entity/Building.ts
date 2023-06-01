@@ -18,6 +18,7 @@ export default class Building extends Phaser.GameObjects.Sprite {
     nearPlanet: Planet | null;
     hoverPos: number[] = [];
     textureName: string;
+    private disabled: boolean;
 
     constructor(scene: GameScene, position: Vector2, textureName: string) {
         super(scene, position.x, position.y, textureName);
@@ -26,15 +27,23 @@ export default class Building extends Phaser.GameObjects.Sprite {
         this.scene.add.existing(this);
         this.setScale(this.imageScale);
         this.nearPlanet = null;
-        this.scene.input.on("pointerup", (ev) => {
-            if (this.nearPlanet) {
-                this.nearPlanet.buildBuilding(this, ...this.hoverPos);
-            }
-        });
+        this.disabled = false;
+    }
+
+    buildBuilding(shiftModifier: boolean) {
+        if (!this.disabled && this.nearPlanet) {
+            this.nearPlanet.buildBuilding(shiftModifier, this, ...this.hoverPos);
+        }
+    }
+
+    setDisabled(value: boolean) {
+        this.disabled = value;
+        this.visible = !this.disabled;
     }
 
     update(delta: number) {
         this.graphics.clear();
+        if (this.disabled) return;
         this.graphics.lineStyle(7, 0xff0000, 1);
         this.currentRadiusRotation = (this.currentRadiusRotation + (d2r(50) * delta) / 1000) % Phaser.Math.PI2;
         if (this.radiusVisible) {

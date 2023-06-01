@@ -19,6 +19,8 @@ import { GasResource } from "../entity/objects/GasResource";
 import { OreResource } from "../entity/objects/OreResource";
 import { Images } from "./PreloadScene";
 import { UIScene } from "./UiScene";
+import HumanPlayer from "../model/player/HumanPlayer.ts";
+import System from "../model/System.ts";
 
 const edgeSize: number = 50; // define the size of the edge area that will trigger the camera movement
 const scrollSpeed: number = 10; // define the speed at which the camera will move
@@ -30,7 +32,7 @@ export default class GameScene extends Phaser.Scene {
     private graphics: Phaser.GameObjects.Graphics;
     private selectionRectGraphics: Phaser.GameObjects.Graphics;
     private building: Building | null = null;
-    private planet: Planet;
+    public planet: Planet;
     private controls: Phaser.Cameras.Controls.FixedKeyControl;
     private wormholes: Wormhole[] = [];
 
@@ -42,6 +44,9 @@ export default class GameScene extends Phaser.Scene {
     private gasObjects: GasResource[] = [];
     private oreObjects: OreResource[] = [];
     private uiScene: UIScene;
+
+    private system: System;
+    private player: HumanPlayer;
 
     constructor() {
         super(SceneRegistry.GAME);
@@ -118,6 +123,11 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
+        this.uiScene = new UIScene();
+        // Add the UI scene to the game
+        this.scene.add("uiScene", this.uiScene, true);
+        this.system = new System(this, this.uiScene);
+        this.player = new HumanPlayer(0, this.system);
         const size = 128;
         this.input.setDefaultCursor(`url(${cursor}), default`);
         this.graphics = this.add.graphics();
@@ -155,12 +165,9 @@ export default class GameScene extends Phaser.Scene {
         this.oreObjects.push(new OreResource(this, nodeToPos(this.map.getNode(6, 5))));
 
         this.planet = new Planet(this, nodeToPos(this.map.getNode(4, 8)), Images.PLANET);
-        const pointerWorldLoc = this.getWorldPos(this.input.activePointer);
-        this.building = new Building(this, pointerWorldLoc, Images.HQ_ICON);
-        this.uiScene = new UIScene();
-
-        // Add the UI scene to the game
-        this.scene.add("uiScene", this.uiScene, true);
+        // const pointerWorldLoc = this.getWorldPos(this.input.activePointer);
+        // this.building = new Building(this, pointerWorldLoc, Images.HQ_ICON);
+        this.player.create();
         this.setupEventHandlers();
     }
 
@@ -317,6 +324,7 @@ export default class GameScene extends Phaser.Scene {
         this.controls.update(delta);
         this.building?.update(delta);
         this.planet?.update(delta);
+        this.player.update(delta);
         this.units.forEach((unit) => unit.update(delta));
 
         if (this.input.activePointer.x < edgeSize) {
