@@ -1,5 +1,8 @@
 import IconButton from "../entity/IconButton";
 import { Images } from "./PreloadScene";
+import HumanPlayer from "../model/player/HumanPlayer.ts";
+import Building from "../entity/Building.ts";
+import GameScene from "./GameScene.ts";
 import Pointer = Phaser.Input.Pointer;
 
 export class UIScene extends Phaser.Scene {
@@ -7,9 +10,12 @@ export class UIScene extends Phaser.Scene {
     counter = 0;
     backgroundRect: Phaser.GameObjects.Rectangle;
     buttons: IconButton[] = [];
+    player: HumanPlayer;
+    gameScene: GameScene;
 
-    constructor() {
+    constructor(gameScene: GameScene) {
         super({ key: "uiScene", active: true });
+        this.gameScene = gameScene;
     }
 
     create() {
@@ -43,6 +49,28 @@ export class UIScene extends Phaser.Scene {
 
         // Set the scrollFactor of the UI elements to 0
         this.scoreText.setScrollFactor(0);
+    }
+
+    setHumanPlayer(player: HumanPlayer) {
+        this.player = player;
+    }
+
+    setupIconHandlers() {
+        const textures = [Images.HQ_ICON, Images.REFINERY_ICON, Images.LIGHT_SHIPYARD_ICON];
+        for (let i = 0; i < this.buttons.length; i++) {
+            this.setupIconButtonHandler(this.buttons[i], textures[i]);
+        }
+    }
+
+    private setupIconButtonHandler(button: IconButton, texture: Images): void {
+        button.setInteractive();
+        button.on("pointerdown", () => {
+            if (this.player.buildingShade) {
+                this.player.buildingShade.setTexture(texture);
+            } else {
+                this.player.buildingShade = new Building(this.gameScene, this.gameScene.input.activePointer.position, texture);
+            }
+        });
     }
 
     handlePointerOver(pointer: Pointer, gameObjects: any[], inHandler: Function) {

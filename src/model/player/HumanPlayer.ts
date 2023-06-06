@@ -24,8 +24,12 @@ export default class HumanPlayer extends Player {
         return this.system.uiScene;
     }
 
+    get input(): Phaser.Input.InputPlugin {
+        return this.scene.input;
+    }
+
     setupHandlers() {
-        this.shiftKey = this.scene.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+        this.shiftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
 
         this.scene.input.on("pointerup", (ev: Pointer) => {
             if (this.buildingShade) {
@@ -48,7 +52,7 @@ export default class HumanPlayer extends Player {
             }
         );
 
-        this.scene.input.on("pointermove", (ev: Pointer) => {
+        this.input.on("pointermove", (ev: Pointer) => {
             if (this.buildingShade) {
                 const npos = this.scene.getWorldPos(ev);
                 const distance = Phaser.Math.Distance.Between(npos.x, npos.y, this.scene.planet.x, this.scene.planet.y);
@@ -64,6 +68,25 @@ export default class HumanPlayer extends Player {
                 }
             }
         });
+
+        this.input.keyboard!.on("keyup-Q", (ev) => {
+            if (this.buildingShade) {
+                this.buildingShade.wide = 1;
+            }
+        });
+
+        this.input.keyboard!.on("keyup-W", (ev) => {
+            if (this.buildingShade) {
+                this.buildingShade.wide = 2;
+            }
+        });
+
+        this.input.keyboard!.on("keyup-E", (ev) => {
+            if (this.buildingShade) {
+                this.buildingShade.wide = 3;
+            }
+        });
+
     }
 
     create() {

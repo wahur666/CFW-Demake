@@ -31,7 +31,6 @@ export default class GameScene extends Phaser.Scene {
     private selectedUnits: Unit[] = [];
     private graphics: Phaser.GameObjects.Graphics;
     private selectionRectGraphics: Phaser.GameObjects.Graphics;
-    private building: Building | null = null;
     public planet: Planet;
     private controls: Phaser.Cameras.Controls.FixedKeyControl;
     private wormholes: Wormhole[] = [];
@@ -123,11 +122,13 @@ export default class GameScene extends Phaser.Scene {
     }
 
     create() {
-        this.uiScene = new UIScene();
+        this.uiScene = new UIScene(this);
         // Add the UI scene to the game
         this.scene.add("uiScene", this.uiScene, true);
         this.system = new System(this, this.uiScene);
         this.player = new HumanPlayer(0, this.system);
+        this.uiScene.setHumanPlayer(this.player);
+        this.uiScene.setupIconHandlers();
         const size = 128;
         this.input.setDefaultCursor(`url(${cursor}), default`);
         this.graphics = this.add.graphics();
@@ -165,8 +166,6 @@ export default class GameScene extends Phaser.Scene {
         this.oreObjects.push(new OreResource(this, nodeToPos(this.map.getNode(6, 5))));
 
         this.planet = new Planet(this, nodeToPos(this.map.getNode(4, 8)), Images.PLANET);
-        // const pointerWorldLoc = this.getWorldPos(this.input.activePointer);
-        // this.building = new Building(this, pointerWorldLoc, Images.HQ_ICON);
         this.player.create();
         this.setupEventHandlers();
     }
@@ -277,39 +276,8 @@ export default class GameScene extends Phaser.Scene {
         //
         // });
 
-        this.input.keyboard!.on("keyup-Q", (ev) => {
-            if (this.building) {
-                this.building.wide = 1;
-            }
-        });
-
-        this.input.keyboard!.on("keyup-W", (ev) => {
-            if (this.building) {
-                this.building.wide = 2;
-            }
-        });
-
-        this.input.keyboard!.on("keyup-E", (ev) => {
-            if (this.building) {
-                this.building.wide = 3;
-            }
-        });
 
         this.input.on("pointermove", (ev: Pointer) => {
-            if (this.building) {
-                const npos = this.getWorldPos(ev);
-                const distance = Phaser.Math.Distance.Between(npos.x, npos.y, this.planet.x, this.planet.y);
-                if (Math.abs(distance - this.planet.radius) < 20) {
-                    this.building.unBound = false;
-                    this.building.nearPlanet = this.planet;
-                    const loc = this.building.calculatePlace(this.planet, npos.x, npos.y);
-                    console.log("loc", loc);
-                } else {
-                    this.building.unBound = true;
-                    this.building.nearPlanet = null;
-                    this.building.setPosition(npos.x, npos.y);
-                }
-            }
             if (this.dragging) {
                 this.drawSelectionRect(this.getWorldPos(ev));
             }
@@ -322,7 +290,6 @@ export default class GameScene extends Phaser.Scene {
 
     update(time: number, delta: number) {
         this.controls.update(delta);
-        this.building?.update(delta);
         this.planet?.update(delta);
         this.player.update(delta);
         this.units.forEach((unit) => unit.update(delta));
