@@ -30,9 +30,9 @@ export default class Building extends Phaser.GameObjects.Sprite {
         this.disabled = false;
     }
 
-    buildBuilding(shiftModifier: boolean) {
+    buildBuilding() {
         if (!this.disabled && this.nearPlanet) {
-            this.nearPlanet.buildBuilding(shiftModifier, this, ...this.hoverPos);
+            this.nearPlanet.buildBuilding(this, ...this.hoverPos);
         }
     }
 

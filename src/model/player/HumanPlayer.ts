@@ -31,9 +31,18 @@ export default class HumanPlayer extends Player {
     setupHandlers() {
         this.shiftKey = this.input.keyboard!.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
 
-        this.scene.input.on("pointerup", (ev: Pointer) => {
-            if (this.buildingShade) {
-                this.buildingShade.buildBuilding(this.shiftKey.isDown);
+        this.scene.input.on("pointerup", (pointer: Pointer) => {
+            if (pointer.button === 2) {
+                this.buildingShade?.destroy();
+                this.buildingShade = null;
+            }
+            if (pointer.button === 0) {
+                if (this.buildingShade) {
+                    this.buildingShade.buildBuilding();
+                    if (!this.shiftKey.isDown) {
+                        this.buildingShade = null;
+                    }
+                }
             }
         });
 
@@ -90,8 +99,8 @@ export default class HumanPlayer extends Player {
     }
 
     create() {
-        const pointerWorldLoc = this.scene.getWorldPos(this.scene.input.activePointer);
-        this.buildingShade = new Building(this.scene, pointerWorldLoc, Images.HQ_ICON);
+        // const pointerWorldLoc = this.scene.getWorldPos(this.scene.input.activePointer);
+        // this.buildingShade = new Building(this.scene, pointerWorldLoc, Images.HQ_ICON);
         this.setupHandlers();
     }
 

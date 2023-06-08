@@ -42,7 +42,7 @@ export default class Planet extends Phaser.GameObjects.Sprite {
         }
     }
 
-    buildBuilding(shiftModifier: boolean, building: Building, ...slots: number[]): boolean {
+    buildBuilding(building: Building, ...slots: number[]): boolean {
         for (const slot of slots) {
             if (this.slots[slot] === SlotStatus.OCCUPIED) {
                 return false;
@@ -51,11 +51,7 @@ export default class Planet extends Phaser.GameObjects.Sprite {
         for (const slot of slots) {
             this.slots[slot] = SlotStatus.OCCUPIED;
         }
-        if (shiftModifier) {
-            this.buildings.push(building.clone());
-        } else {
-            this.buildings.push(building);
-        }
+        this.buildings.push(building.clone());
         return true;
     }
 }
