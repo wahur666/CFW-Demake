@@ -5,7 +5,6 @@ import Building from "../../entity/Building.ts";
 import GameScene from "../../scenes/GameScene.ts";
 import Pointer = Phaser.Input.Pointer;
 import { UIScene } from "../../scenes/UiScene.ts";
-import { Images } from "../../scenes/PreloadScene.ts";
 
 export default class HumanPlayer extends Player {
     buildingShade: Building | null = null;
@@ -105,6 +104,7 @@ export default class HumanPlayer extends Player {
     }
 
     update(delta: number) {
+        super.update(delta);
         this.buildingShade?.update(delta);
     }
 }

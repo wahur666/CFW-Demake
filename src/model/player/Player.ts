@@ -1,5 +1,6 @@
 import System from "../System";
 import Building from "../../entity/Building";
+import Unit from "../../entity/Unit.ts";
 
 export default abstract class Player {
     protected currentOre: number = 0;
@@ -16,8 +17,14 @@ export default abstract class Player {
 
     protected buildings: Building[];
 
+    public units: Unit[] = [];
+
     protected constructor(index: number, system: System) {
         this.index = index;
         this.system = system;
+    }
+
+    public update(delta: number) {
+        this.units.forEach((unit) => unit.update(delta));
     }
 }

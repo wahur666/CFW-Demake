@@ -4,7 +4,6 @@ import { SHARED_CONFIG } from "../model/config";
 import Wormhole from "../entity/Wormhole";
 import Unit, { TravelState } from "../entity/Unit";
 import { route } from "preact-router";
-import Building from "../entity/Building";
 import Planet from "../entity/Planet";
 import GameMap from "../model/GameMap/GameMap";
 import { calculateRect, drawWidth, GAME_SCALE, getRandomInt, inRect, nodeToPos, posToNodeCoords, toVec2 } from "../helpers/utils";
@@ -27,7 +26,6 @@ const scrollSpeed: number = 10; // define the speed at which the camera will mov
 
 export default class GameScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
-    private units: Unit[] = [];
     private selectedUnits: Unit[] = [];
     private graphics: Phaser.GameObjects.Graphics;
     private selectionRectGraphics: Phaser.GameObjects.Graphics;
@@ -71,7 +69,7 @@ export default class GameScene extends Phaser.Scene {
             }
         }
         if (!force) {
-            for (const unit of this.units) {
+            for (const unit of this.player.units) {
                 if (!unit.isMoving && toVec2(posToNodeCoords(unit.pos)).equals(pos)) {
                     return false;
                 }
@@ -155,18 +153,18 @@ export default class GameScene extends Phaser.Scene {
 
         // this.input.mouse.disableContextMenu();
 
-        this.units.push(new Corvette(this, nodeToPos(this.map.getNode(2, 2))));
-        this.units.push(new Corvette(this, nodeToPos(this.map.getNode(2, 3))));
-        this.units.push(new Corvette(this, nodeToPos(this.map.getNode(2, 4))));
-        this.units.push(new Corvette(this, nodeToPos(this.map.getNode(4, 1))));
-        this.units.push(new Harvester(this, nodeToPos(this.map.getNode(4, 2))));
-        this.units.push(new Fabricator(this, nodeToPos(this.map.getNode(4, 3))));
 
         this.gasObjects.push(new GasResource(this, nodeToPos(this.map.getNode(5, 5))));
         this.oreObjects.push(new OreResource(this, nodeToPos(this.map.getNode(6, 5))));
 
         this.planet = new Planet(this, nodeToPos(this.map.getNode(4, 8)), Images.PLANET);
         this.player.create();
+        this.player.units.push(new Corvette(this, nodeToPos(this.map.getNode(2, 2))));
+        this.player.units.push(new Corvette(this, nodeToPos(this.map.getNode(2, 3))));
+        this.player.units.push(new Corvette(this, nodeToPos(this.map.getNode(2, 4))));
+        this.player.units.push(new Corvette(this, nodeToPos(this.map.getNode(4, 1))));
+        this.player.units.push(new Harvester(this, nodeToPos(this.map.getNode(4, 2))));
+        this.player.units.push(new Fabricator(this, nodeToPos(this.map.getNode(4, 3))));
         this.setupEventHandlers();
     }
 
@@ -226,7 +224,7 @@ export default class GameScene extends Phaser.Scene {
                         this.dragStart.distance(this.getWorldPos(ev)) > 5
                             ? (pos: Vector2) => inRect(pos, this.getWorldPos(ev), this.dragStart!)
                             : (pos: Vector2) => pos.distance(this.getWorldPos(ev)) < 10 * GAME_SCALE;
-                    for (const unit of this.units) {
+                    for (const unit of this.player.units) {
                         unit.setSelected(selectionFunction(unit.pos));
                         if (unit.isSelected) {
                             this.selectedUnits.push(unit);
@@ -292,7 +290,6 @@ export default class GameScene extends Phaser.Scene {
         this.controls.update(delta);
         this.planet?.update(delta);
         this.player.update(delta);
-        this.units.forEach((unit) => unit.update(delta));
 
         if (this.input.activePointer.x < edgeSize) {
             this.cameras.main.setScroll(this.cameras.main.scrollX - scrollSpeed, this.cameras.main.scrollY);
