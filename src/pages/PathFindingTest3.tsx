@@ -4,12 +4,11 @@ import { SHARED_CONFIG } from "../model/config";
 import ScaleModes = Phaser.Scale.ScaleModes;
 import PathfindingTestScene3 from "../scenes/PathfindingTestScene3";
 import { useEffect, useRef } from "preact/hooks";
-import PathfindingTestScene2 from "../scenes/PathfindingTestScene2.ts";
 
 const config: Phaser.Types.Core.GameConfig & typeof SHARED_CONFIG = {
     ...SHARED_CONFIG,
     type: Phaser.WEBGL,
-    scene: [PathfindingTestScene2],
+    scene: [PathfindingTestScene3],
     scale: {
         mode: ScaleModes.RESIZE,
     },

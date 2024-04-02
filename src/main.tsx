@@ -13,6 +13,7 @@ import { PageRoutes } from "./pages/routes";
 import "./style.scss";
 import PathFindingTest from "./pages/PathFindingTest";
 import PathFindingTest2 from "./pages/PathFindingTest2";
+import PathFindingTest3 from "./pages/PathFindingTest3";
 render(
     // @ts-ignore
     <Router history={createHashHistory()}>
@@ -22,6 +23,7 @@ render(
         <Route component={Lobby} path={PageRoutes.LOBBY} />
         <Route component={PathFindingTest} path={PageRoutes.PATHFINDING_TEST} />
         <Route component={PathFindingTest2} path={PageRoutes.PATHFINDING2_TEST} />
+        <Route component={PathFindingTest3} path={PageRoutes.PATHFINDING3_TEST} />
     </Router>,
     document.getElementById("app") as HTMLElement
 );

@@ -15,6 +15,7 @@ export default function Root() {
     const goToEditor = () => route(PageRoutes.EDITOR, true);
     const gotoPathfinding = () => route(PageRoutes.PATHFINDING_TEST, true);
     const gotoPathfinding2 = () => route(PageRoutes.PATHFINDING2_TEST, true);
+    const gotoPathfinding3 = () => route(PageRoutes.PATHFINDING3_TEST, true);
 
     const aRef = useRef<HTMLDivElement>(null);
     useRescale(aRef, 0.85);
@@ -57,6 +58,9 @@ export default function Root() {
                         </Button>
                         <Button animator={{ animate: true }} className="w-40" onClick={gotoPathfinding2}>
                             <Text>Pathfinding2</Text>
+                        </Button>
+                        <Button animator={{ animate: true }} className="w-40" onClick={gotoPathfinding3}>
+                            <Text>Pathfinding3</Text>
                         </Button>
                     </div>
                 </div>
