@@ -2,7 +2,6 @@ import Phaser from "phaser";
 
 import { SHARED_CONFIG } from "../model/config";
 import ScaleModes = Phaser.Scale.ScaleModes;
-import PathfindingTestScene3 from "../scenes/PathfindingTestScene3";
 import { useEffect, useRef } from "preact/hooks";
 import PathfindingTestScene2 from "../scenes/PathfindingTestScene2.ts";
 
