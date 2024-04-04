@@ -50,6 +50,7 @@ export default class GameMap {
         this.sectorNodeMap[3][4] = null;
         this.sectorNodeMap[4][5] = null;
         this.sectorNodeMap[3][5] = null;
+        this.sectorNodeMap[5][4] = null;
         this.generateWormholes();
         this.generateNeighbours();
     }

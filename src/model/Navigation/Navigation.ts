@@ -54,6 +54,88 @@ export class Navigation {
         return path;
     }
 
+    private getPixelsOnLine(p1: Vector2, p2: Vector2): Vector2[] {
+        let pixels: Vector2[] = [];
+
+        // Calculate differences and directions
+        let dx = Math.abs(p2.x - p1.x);
+        let dy = Math.abs(p2.y - p1.y);
+        let sx = (p1.x < p2.x) ? 1 : -1;
+        let sy = (p1.y < p2.y) ? 1 : -1;
+        let err = dx - dy;
+
+        // Initial pixel
+        let x = p1.x;
+        let y = p1.y;
+
+        while (true) {
+            // Add current pixel
+            pixels.push(new Vector2(x, y));
+
+            // Check if end point is reached
+            if (x === p2.x && y === p2.y) {
+                break;
+            }
+
+            // Calculate next pixel
+            let e2 = 2 * err;
+            if (e2 > -dy) {
+                err -= dy;
+                x += sx;
+            }
+            if (e2 < dx) {
+                err += dx;
+                y += sy;
+            }
+        }
+
+        return pixels;
+    }
+
+    private findAfterIndex<T>(arr: T[], callback: (item: T) => boolean, startIndex: number): T | undefined {
+        // Ensure startIndex is within the bounds of the array
+        if (startIndex < 0 || startIndex >= arr.length) {
+            return undefined;
+        }
+
+        // Iterate through the array starting from the given index
+        for (let i = startIndex; i < arr.length; i++) {
+            // If the callback condition is met, return the item
+            if (callback(arr[i])) {
+                return arr[i];
+            }
+        }
+
+        // If no item meets the condition, return undefined
+        return undefined;
+    }
+
+    public optimalizePath(path: GameNode[]): GameNode[] {
+        if (path.length < 2) {
+            return path;
+        }
+        let start = 0;
+        let current = start + 2;
+        const nPath: GameNode[] = [path[start]];
+        while (current < path.length) {
+            const p1 = path[start].position;
+            const p2 = path[current].position;
+            const pixels = this.getPixelsOnLine(p1, p2).slice(1, -1);
+            if (pixels.every(p => this.map.sectorNodeMap[p.x][p.y] !== null && !this.map.sectorNodeMap[p.x][p.y]?.hasWormhole)) {
+                current += 1;
+            } else {
+                nPath.push(path[current-1]);
+                start = current
+                if (this.map.sectorNodeMap[p2.x][p2.y]?.hasWormhole) {
+                    nPath.push(path[current])
+                }
+                current = start + 1
+            }
+        }
+        nPath.push(path.at(-1)!)
+        return nPath;
+    }
+
     // returns true if the line from (a,b)->(c,d) intersects with (p,q)->(r,s)
     private intersects(a: number, b: number, c: number, d: number, p: number, q: number, r: number, s: number): boolean {
         const det = (c - a) * (s - q) - (r - p) * (d - b);
