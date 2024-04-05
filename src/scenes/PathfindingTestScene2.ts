@@ -42,7 +42,7 @@ export default class PathfindingTestScene extends Phaser.Scene {
         }
         const navi = new Navigation(map);
         let path = navi.findPath(map.getNode(1, 1), map.getNode(29, 31));
-        path = navi.optimalizePath(path);
+        path = navi.optimizePath(path);
         console.log(path);
         this.graphics.lineStyle(3, 0xff0000, 3);
         for (let i = 0; i < path.length - 1; i++) {

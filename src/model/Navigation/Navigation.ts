@@ -1,7 +1,7 @@
 import Heap from "heap-js";
 import Vector2 = Phaser.Math.Vector2;
 import GameMap from "../GameMap/GameMap";
-import { GameNode } from "../GameMap/GameMap";
+import {GameNode} from "../GameMap/GameMap";
 
 interface PriorityNode {
     node: GameNode;
@@ -9,14 +9,15 @@ interface PriorityNode {
 }
 
 export class Navigation {
-    constructor(private map: GameMap) {}
+    constructor(private map: GameMap) {
+    }
 
     public findPath(start: GameNode, end: GameNode): GameNode[] {
         if (!this.map.sectorNodeMap[start.position.x][start.position.y] || !this.map.sectorNodeMap[end.position.x][end.position.y]) {
             return [];
         }
         const frontier: Heap<PriorityNode> = new Heap<PriorityNode>((a, b) => a.priority - b.priority);
-        frontier.push({ node: start, priority: 0 });
+        frontier.push({node: start, priority: 0});
         const cameFrom = new Map<GameNode, GameNode | null>();
         const costSoFar = new Map<GameNode, number>();
         cameFrom.set(start, null);
@@ -34,7 +35,7 @@ export class Navigation {
                 if (!cameFrom.has(next) || newCost < (costSoFar.get(next) as number)) {
                     costSoFar.set(next, newCost);
                     const priority = newCost + end.distance(next);
-                    frontier.push({ node: next, priority });
+                    frontier.push({node: next, priority});
                     cameFrom.set(next, current.node);
                 }
             }
@@ -55,13 +56,13 @@ export class Navigation {
     }
 
     private getPixelsOnLine(p1: Vector2, p2: Vector2): Vector2[] {
-        let pixels: Vector2[] = [];
+        const pixels: Vector2[] = [];
 
         // Calculate differences and directions
-        let dx = Math.abs(p2.x - p1.x);
-        let dy = Math.abs(p2.y - p1.y);
-        let sx = (p1.x < p2.x) ? 1 : -1;
-        let sy = (p1.y < p2.y) ? 1 : -1;
+        const dx = Math.abs(p2.x - p1.x);
+        const dy = Math.abs(p2.y - p1.y);
+        const sx = (p1.x < p2.x) ? 1 : -1;
+        const sy = (p1.y < p2.y) ? 1 : -1;
         let err = dx - dy;
 
         // Initial pixel
@@ -78,7 +79,7 @@ export class Navigation {
             }
 
             // Calculate next pixel
-            let e2 = 2 * err;
+            const e2 = 2 * err;
             if (e2 > -dy) {
                 err -= dy;
                 x += sx;
@@ -110,29 +111,33 @@ export class Navigation {
         return undefined;
     }
 
-    public optimalizePath(path: GameNode[]): GameNode[] {
+    public optimizePath(path: GameNode[]): GameNode[] {
         if (path.length < 2) {
             return path;
         }
         let start = 0;
         let current = start + 2;
         const nPath: GameNode[] = [path[start]];
-        while (current < path.length) {
+        let i = 0;
+        const maxIterations = 1000;
+        for (; i < maxIterations && current < path.length; i++) {
             const p1 = path[start].position;
             const p2 = path[current].position;
-            const pixels = this.getPixelsOnLine(p1, p2).slice(1, -1);
-            if (pixels.every(p => this.map.sectorNodeMap[p.x][p.y] !== null && !this.map.sectorNodeMap[p.x][p.y]?.hasWormhole)) {
+            const pixels = this.getPixelsOnLine(p1, p2);
+            if (pixels.every(p => this.map.sectorNodeMap[p.x][p.y] !== null)) {
                 current += 1;
             } else {
-                nPath.push(path[current-1]);
-                start = current
-                if (this.map.sectorNodeMap[p2.x][p2.y]?.hasWormhole) {
-                    nPath.push(path[current])
-                }
-                current = start + 1
+                nPath.push(path[current - 1]);
+                start = current - 1
+                current = start + 2
             }
         }
+        if (i == maxIterations) {
+            console.warn(`Path optimization failed ${JSON.stringify(path.map(node => node.position))}`)
+            return path;
+        }
         nPath.push(path.at(-1)!)
+        console.log(`Path optimized ${path.length} -> ${nPath.length}`)
         return nPath;
     }
 
