@@ -94,7 +94,6 @@ export default class HumanPlayer extends Player {
                 this.buildingShade.wide = 3;
             }
         });
-
     }
 
     create() {

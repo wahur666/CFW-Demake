@@ -41,22 +41,22 @@ export default class GameMap {
         this.size = size;
         this.sectorNodeMap = nullMatrix(this.size);
         this.createSector(1, 1, 10);
-        this.createSector(20, 5, 10);
-        this.createSector(35, 9, 10);
-        this.createSector(8, 20, 10);
-        this.createSector(25, 29, 10);
-        this.createSector(44, 30, 32);
+        // this.createSector(20, 5, 10);
+        // this.createSector(35, 9, 10);
+        // this.createSector(8, 20, 10);
+        // this.createSector(25, 29, 10);
+        // this.createSector(44, 30, 32);
         this.sectorNodeMap[4][4] = null;
         this.sectorNodeMap[3][4] = null;
         this.sectorNodeMap[4][5] = null;
         this.sectorNodeMap[3][5] = null;
         this.sectorNodeMap[5][4] = null;
 
-        this.sectorNodeMap[23][11] = null;
-        this.sectorNodeMap[24][11] = null;
-        this.sectorNodeMap[23][12] = null;
-        this.sectorNodeMap[24][12] = null;
-        this.generateWormholes();
+        // this.sectorNodeMap[23][11] = null;
+        // this.sectorNodeMap[24][11] = null;
+        // this.sectorNodeMap[23][12] = null;
+        // this.sectorNodeMap[24][12] = null;
+        // this.generateWormholes();
         this.generateNeighbours();
     }
 

@@ -1,7 +1,7 @@
 import Heap from "heap-js";
 import Vector2 = Phaser.Math.Vector2;
 import GameMap from "../GameMap/GameMap";
-import {GameNode} from "../GameMap/GameMap";
+import { GameNode } from "../GameMap/GameMap";
 
 interface PriorityNode {
     node: GameNode;
@@ -9,15 +9,14 @@ interface PriorityNode {
 }
 
 export class Navigation {
-    constructor(private map: GameMap) {
-    }
+    constructor(private map: GameMap) {}
 
     public findPath(start: GameNode, end: GameNode): GameNode[] {
         if (!this.map.sectorNodeMap[start.position.x][start.position.y] || !this.map.sectorNodeMap[end.position.x][end.position.y]) {
             return [];
         }
         const frontier: Heap<PriorityNode> = new Heap<PriorityNode>((a, b) => a.priority - b.priority);
-        frontier.push({node: start, priority: 0});
+        frontier.push({ node: start, priority: 0 });
         const cameFrom = new Map<GameNode, GameNode | null>();
         const costSoFar = new Map<GameNode, number>();
         cameFrom.set(start, null);
@@ -35,7 +34,7 @@ export class Navigation {
                 if (!cameFrom.has(next) || newCost < (costSoFar.get(next) as number)) {
                     costSoFar.set(next, newCost);
                     const priority = newCost + end.distance(next);
-                    frontier.push({node: next, priority});
+                    frontier.push({ node: next, priority });
                     cameFrom.set(next, current.node);
                 }
             }
@@ -61,8 +60,8 @@ export class Navigation {
         // Calculate differences and directions
         const dx = Math.abs(p2.x - p1.x);
         const dy = Math.abs(p2.y - p1.y);
-        const sx = (p1.x < p2.x) ? 1 : -1;
-        const sy = (p1.y < p2.y) ? 1 : -1;
+        const sx = p1.x < p2.x ? 1 : -1;
+        const sy = p1.y < p2.y ? 1 : -1;
         let err = dx - dy;
 
         // Initial pixel
@@ -115,6 +114,26 @@ export class Navigation {
         if (path.length < 2) {
             return path;
         }
+        function reduceAdjacentDuplicates(lst: Vector2[]): Vector2[] {
+            if (!lst.length) {
+                return [];
+            }
+
+            const result: any[] = [lst[0]];
+            for (let i = 1; i < lst.length; i++) {
+                if (!lst[i].equals(result[result.length - 1])) {
+                    result.push(lst[i]);
+                }
+            }
+
+            return result;
+        }
+        const dc = 20;
+        const c = (i: number) => dc + i * dc;
+        const rc = (i: number) => Math.round((i - dc) / dc) | 0;
+        const z = path.map((p) => new Vector2(c(p.position.x), c(p.position.y)));
+
+
         let start = 0;
         let current = start + 2;
         const nPath: GameNode[] = [path[start]];
@@ -123,21 +142,26 @@ export class Navigation {
         for (; i < maxIterations && current < path.length; i++) {
             const p1 = path[start].position;
             const p2 = path[current].position;
+            const pixiz = this.getPixelsOnLine(z[0], z[z.length - 1]);
+            const rpixiz = pixiz.map((p) => new Vector2(rc(p.x), rc(p.y)));
+            console.log("Red", reduceAdjacentDuplicates(rpixiz).map(p => this.map.getNode(p.x, p.y)));
+
+
             const pixels = this.getPixelsOnLine(p1, p2);
-            if (pixels.every(p => this.map.sectorNodeMap[p.x][p.y] !== null)) {
+            if (pixels.every((p) => this.map.sectorNodeMap[p.x][p.y] !== null)) {
                 current += 1;
             } else {
                 nPath.push(path[current - 1]);
-                start = current - 1
-                current = start + 2
+                start = current - 1;
+                current = start + 2;
             }
         }
         if (i == maxIterations) {
-            console.warn(`Path optimization failed ${JSON.stringify(path.map(node => node.position))}`)
+            console.warn(`Path optimization failed ${JSON.stringify(path.map((node) => node.position))}`);
             return path;
         }
-        nPath.push(path.at(-1)!)
-        console.log(`Path optimized ${path.length} -> ${nPath.length}`)
+        nPath.push(path.at(-1)!);
+        console.log(`Path optimized ${path.length} -> ${nPath.length}`);
         return nPath;
     }
 

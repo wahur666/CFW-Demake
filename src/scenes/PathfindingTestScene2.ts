@@ -1,8 +1,8 @@
 import Phaser from "phaser";
-import {SHARED_CONFIG} from "../model/config";
-import {SceneRegistry} from "./SceneRegistry";
+import { SHARED_CONFIG } from "../model/config";
+import { SceneRegistry } from "./SceneRegistry";
 import GameMap from "../model/GameMap/GameMap.ts";
-import {Navigation} from "../model/Navigation";
+import { Navigation } from "../model/Navigation";
 
 export default class PathfindingTestScene extends Phaser.Scene {
     private config: typeof SHARED_CONFIG;
@@ -41,14 +41,14 @@ export default class PathfindingTestScene extends Phaser.Scene {
             );
         }
         const navi = new Navigation(map);
-        let path = navi.findPath(map.getNode(1, 1), map.getNode(29, 31));
+        let path = navi.findPath(map.getNode(1, 1), map.getNode(6, 4));
         path = navi.optimizePath(path);
         console.log(path);
         this.graphics.lineStyle(3, 0xff0000, 3);
         for (let i = 0; i < path.length - 1; i++) {
             this.graphics.lineBetween(c(path[i].position.x), c(path[i].position.y), c(path[i + 1].position.x), c(path[i + 1].position.y));
         }
-        this.drawGrid(map)
+        this.drawGrid(map);
     }
 
     drawGrid(map: GameMap) {
@@ -65,6 +65,4 @@ export default class PathfindingTestScene extends Phaser.Scene {
             }
         }
     }
-
-
 }

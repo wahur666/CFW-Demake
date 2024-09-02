@@ -1,32 +1,23 @@
 import Phaser from "phaser";
-import {SceneRegistry} from "./SceneRegistry";
-import {SHARED_CONFIG} from "../model/config";
+import { SceneRegistry } from "./SceneRegistry";
+import { SHARED_CONFIG } from "../model/config";
 import Wormhole from "../entity/Wormhole";
-import Unit, {TravelState} from "../entity/Unit";
-import {route} from "preact-router";
+import Unit, { TravelState } from "../entity/Unit";
+import { route } from "preact-router";
 import Planet from "../entity/Planet";
 import GameMap from "../model/GameMap/GameMap";
-import {
-    calculateRect,
-    drawWidth,
-    GAME_SCALE,
-    getRandomInt,
-    inRect,
-    nodeToPos,
-    posToNodeCoords,
-    toVec2
-} from "../helpers/utils";
+import { calculateRect, drawWidth, GAME_SCALE, getRandomInt, inRect, nodeToPos, posToNodeCoords, toVec2 } from "../helpers/utils";
 import cursor from "../assets/cursor.png";
-import {Navigation} from "../model/Navigation";
+import { Navigation } from "../model/Navigation";
 import Pointer = Phaser.Input.Pointer;
 import Vector2 = Phaser.Math.Vector2;
-import {Corvette} from "../entity/units/Corvette";
-import {Harvester} from "../entity/units/Harvester";
-import {Fabricator} from "../entity/units/Fabricator";
-import {GasResource} from "../entity/objects/GasResource";
-import {OreResource} from "../entity/objects/OreResource";
-import {Images} from "./PreloadScene";
-import {UIScene} from "./UiScene";
+import { Corvette } from "../entity/units/Corvette";
+import { Harvester } from "../entity/units/Harvester";
+import { Fabricator } from "../entity/units/Fabricator";
+import { GasResource } from "../entity/objects/GasResource";
+import { OreResource } from "../entity/objects/OreResource";
+import { Images } from "./PreloadScene";
+import { UIScene } from "./UiScene";
 import HumanPlayer from "../model/player/HumanPlayer.ts";
 import System from "../model/System.ts";
 
@@ -162,7 +153,6 @@ export default class GameScene extends Phaser.Scene {
 
         // this.input.mouse.disableContextMenu();
 
-
         this.gasObjects.push(new GasResource(this, nodeToPos(this.map.getNode(5, 5))));
         this.oreObjects.push(new OreResource(this, nodeToPos(this.map.getNode(6, 5))));
 
@@ -283,7 +273,6 @@ export default class GameScene extends Phaser.Scene {
         //
         //
         // });
-
 
         this.input.on("pointermove", (ev: Pointer) => {
             if (this.dragging) {
