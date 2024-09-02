@@ -110,7 +110,7 @@ export class Navigation {
         return undefined;
     }
 
-    public optimizePath(path: GameNode[]): GameNode[] {
+    public optimizePath(path: GameNode[], cellSize: number): GameNode[] {
         if (path.length < 2) {
             return path;
         }
@@ -128,27 +128,20 @@ export class Navigation {
 
             return result;
         }
-        const dc = 20;
+        const dc = cellSize;
         const c = (i: number) => dc + i * dc;
         const rc = (i: number) => Math.round((i - dc) / dc) | 0;
-        const z = path.map((p) => new Vector2(c(p.position.x), c(p.position.y)));
-
-
         let start = 0;
         let current = start + 2;
         const nPath: GameNode[] = [path[start]];
         let i = 0;
         const maxIterations = 1000;
         for (; i < maxIterations && current < path.length; i++) {
-            const p1 = path[start].position;
-            const p2 = path[current].position;
-            const pixiz = this.getPixelsOnLine(z[0], z[z.length - 1]);
+            const p1 = new Vector2(c(path[start].position.x), c(path[start].position.y));
+            const p2 = new Vector2(c(path[current].position.x), c(path[current].position.y));
+            const pixiz = this.getPixelsOnLine(p1, p2);
             const rpixiz = pixiz.map((p) => new Vector2(rc(p.x), rc(p.y)));
-            console.log("Red", reduceAdjacentDuplicates(rpixiz).map(p => this.map.getNode(p.x, p.y)));
-
-
-            const pixels = this.getPixelsOnLine(p1, p2);
-            if (pixels.every((p) => this.map.sectorNodeMap[p.x][p.y] !== null)) {
+            if (reduceAdjacentDuplicates(rpixiz).map(p => this.map.getNode(p.x, p.y)).every(gn => gn !== null)) {
                 current += 1;
             } else {
                 nPath.push(path[current - 1]);
